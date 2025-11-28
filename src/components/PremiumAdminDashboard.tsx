@@ -39,6 +39,8 @@ export default function PremiumAdminDashboard() {
   const [previewPost, setPreviewPost] = useState<Partial<BlogPost> | null>(null);
   const [stats, setStats] = useState({ total: 0, published: 0, drafts: 0, views: 0 });
   const [editorMode, setEditorMode] = useState<'visual' | 'html'>('visual');
+  const [aiGenerating, setAiGenerating] = useState(false);
+  const [seoSuggestions, setSeoSuggestions] = useState<any>(null);
 
   useEffect(() => {
     fetchPosts();
@@ -155,40 +157,66 @@ export default function PremiumAdminDashboard() {
     }
   };
 
-  const autoGenerateSEO = () => {
+  const autoGenerateSEO = async () => {
     if (!currentPost?.title?.en) {
       alert('Please enter a title first!');
       return;
     }
 
-    const title = currentPost.title.en;
-    const content = currentPost.content?.en || '';
-    const excerpt = currentPost.excerpt?.en || '';
+    setAiGenerating(true);
+    try {
+      const { generateViralSEO } = await import('@/lib/gemini-seo');
+      
+      const result = await generateViralSEO(
+        currentPost.title.en,
+        currentPost.content?.en || '',
+        currentPost.excerpt?.en || ''
+      );
 
-    // Auto-generate meta title (60 chars max)
-    const metaTitle = title.length > 60 ? title.substring(0, 57) + '...' : title;
+      setSeoSuggestions(result);
 
-    // Auto-generate meta description (160 chars max)
-    const metaDescription = excerpt || (content.replace(/<[^>]*>/g, '').substring(0, 157) + '...');
+      setCurrentPost({
+        ...currentPost,
+        seo: {
+          ...currentPost.seo,
+          metaTitle: { en: result.metaTitle },
+          metaDescription: { en: result.metaDescription },
+          keywords: result.keywords,
+          ogImage: currentPost.coverImage || '',
+        },
+      });
 
-    // Extract keywords from title and content
-    const words = (title + ' ' + content.replace(/<[^>]*>/g, '')).toLowerCase()
-      .split(/\s+/)
-      .filter(word => word.length > 4)
-      .slice(0, 10);
+      alert('🚀 AI-powered viral SEO generated! Check the suggestions below.');
+    } catch (error) {
+      console.error('AI SEO generation error:', error);
+      
+      // Fallback to basic SEO
+      const title = currentPost.title.en;
+      const content = currentPost.content?.en || '';
+      const excerpt = currentPost.excerpt?.en || '';
 
-    setCurrentPost({
-      ...currentPost,
-      seo: {
-        ...currentPost.seo,
-        metaTitle: { en: metaTitle },
-        metaDescription: { en: metaDescription },
-        keywords: [...new Set(words)],
-        ogImage: currentPost.coverImage || '',
-      },
-    });
+      const metaTitle = title.length > 60 ? title.substring(0, 57) + '...' : title;
+      const metaDescription = excerpt || (content.replace(/<[^>]*>/g, '').substring(0, 157) + '...');
+      const words = (title + ' ' + content.replace(/<[^>]*>/g, '')).toLowerCase()
+        .split(/\s+/)
+        .filter(word => word.length > 4)
+        .slice(0, 10);
 
-    alert('SEO fields auto-generated! Review and edit if needed.');
+      setCurrentPost({
+        ...currentPost,
+        seo: {
+          ...currentPost.seo,
+          metaTitle: { en: metaTitle },
+          metaDescription: { en: metaDescription },
+          keywords: [...new Set(words)],
+          ogImage: currentPost.coverImage || '',
+        },
+      });
+
+      alert('⚠️ AI unavailable. Basic SEO generated.');
+    } finally {
+      setAiGenerating(false);
+    }
   };
 
   const handleSave = async () => {
@@ -382,14 +410,71 @@ export default function PremiumAdminDashboard() {
             <Card className="border-2 border-primary/20">
               <CardHeader className="bg-primary/5">
                 <CardTitle className="text-lg flex justify-between items-center">
-                  <span>🚀 SEO Optimization</span>
-                  <Button size="sm" onClick={autoGenerateSEO} variant="outline">
+                  <span>🚀 AI-Powered Viral SEO</span>
+                  <Button size="sm" onClick={autoGenerateSEO} variant="outline" disabled={aiGenerating}>
                     <Sparkles className="h-4 w-4 mr-2" />
-                    Auto-Generate SEO
+                    {aiGenerating ? 'Generating...' : 'Generate Viral SEO'}
                   </Button>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 pt-4">
+                {seoSuggestions && (
+                  <div className="mb-6 p-4 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border-2 border-primary/30">
+                    <h3 className="font-bold text-lg flex items-center gap-2 mb-4">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                      AI Viral Suggestions
+                    </h3>
+
+                    {seoSuggestions.viralTitles && seoSuggestions.viralTitles.length > 0 && (
+                      <div className="mb-4">
+                        <h4 className="font-semibold text-sm mb-2 text-primary">🔥 Viral Title Options (Click to use):</h4>
+                        <div className="space-y-2">
+                          {seoSuggestions.viralTitles.map((title: string, i: number) => (
+                            <button
+                              key={i}
+                              onClick={() => setCurrentPost({
+                                ...currentPost,
+                                title: { ...currentPost.title, en: title }
+                              })}
+                              className="w-full text-left text-sm bg-white p-3 rounded hover:bg-primary/10 transition-colors border border-primary/20"
+                            >
+                              {i + 1}. {title}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {seoSuggestions.viralHooks && seoSuggestions.viralHooks.length > 0 && (
+                      <div className="mb-4">
+                        <h4 className="font-semibold text-sm mb-2 text-secondary">🎯 Viral Hooks:</h4>
+                        <ul className="space-y-1 text-sm">
+                          {seoSuggestions.viralHooks.map((hook: string, i: number) => (
+                            <li key={i} className="flex items-start gap-2">
+                              <span className="text-secondary">•</span>
+                              <span>{hook}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {seoSuggestions.contentSuggestions && seoSuggestions.contentSuggestions.length > 0 && (
+                      <div>
+                        <h4 className="font-semibold text-sm mb-2 text-primary">💡 Content Improvements:</h4>
+                        <ul className="space-y-1 text-sm">
+                          {seoSuggestions.contentSuggestions.map((suggestion: string, i: number) => (
+                            <li key={i} className="flex items-start gap-2">
+                              <span className="text-primary">✓</span>
+                              <span>{suggestion}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <div>
                   <label className="block text-sm font-semibold mb-2">Meta Title (60 chars max)</label>
                   <Input
