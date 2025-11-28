@@ -1,84 +1,73 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import { BlogPost } from '@/types';
 import Image from 'next/image';
 import { Clock, Calendar, User, Eye } from 'lucide-react';
-import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
 import { collection, query, where, getDocs, doc, updateDoc, increment } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
-export async function generateStaticParams() {
-  return [];
-}
+export default function BlogPostPage({ params }: { params: { slug: string; lang: string } }) {
+  const [post, setPost] = useState<BlogPost | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
-export const revalidate = 60;
+  useEffect(() => {
+    async function fetchPost() {
+      try {
+        const q = query(
+          collection(db, 'posts'),
+          where('slug', '==', params.slug),
+          where('published', '==', true)
+        );
+        const snapshot = await getDocs(q);
+        
+        if (snapshot.empty) {
+          setNotFound(true);
+          setLoading(false);
+          return;
+        }
+        
+        const postDoc = snapshot.docs[0];
+        const postData = { id: postDoc.id, ...postDoc.data() } as BlogPost;
+        
+        setPost(postData);
+        
+        // Increment view count
+        await updateDoc(doc(db, 'posts', postDoc.id), {
+          views: increment(1)
+        });
+      } catch (error) {
+        console.error('Error fetching post:', error);
+        setNotFound(true);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPost();
+  }, [params.slug]);
 
-async function getPost(slug: string): Promise<BlogPost | null> {
-  try {
-    const q = query(collection(db, 'posts'), where('slug', '==', slug), where('published', '==', true));
-    const snapshot = await getDocs(q);
-    
-    if (snapshot.empty) return null;
-    
-    const postDoc = snapshot.docs[0];
-    const post = { id: postDoc.id, ...postDoc.data() } as BlogPost;
-    
-    // Increment view count
-    await updateDoc(doc(db, 'posts', postDoc.id), {
-      views: increment(1)
-    });
-    
-    return post;
-  } catch (error) {
-    console.error('Error fetching post:', error);
-    return null;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
   }
-}
 
-export async function generateMetadata({ params }: { params: { slug: string; lang: string } }): Promise<Metadata> {
-  const post = await getPost(params.slug);
-  
-  if (!post) {
-    return {
-      title: 'Post Not Found',
-    };
-  }
-
-  const title = post.seo?.metaTitle?.[params.lang] || post.title[params.lang] || post.title.en;
-  const description = post.seo?.metaDescription?.[params.lang] || post.excerpt[params.lang] || post.excerpt.en;
-  const ogImage = post.seo?.ogImage || post.coverImage;
-
-  return {
-    title,
-    description,
-    keywords: post.seo?.keywords?.join(', '),
-    authors: [{ name: post.author.name }],
-    openGraph: {
-      title,
-      description,
-      images: ogImage ? [{ url: ogImage }] : [],
-      type: 'article',
-      publishedTime: post.createdAt,
-      modifiedTime: post.updatedAt,
-      authors: [post.author.name],
-      tags: post.tags,
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: ogImage ? [ogImage] : [],
-    },
-    alternates: {
-      canonical: `/${params.lang}/blog/${params.slug}`,
-    },
-  };
-}
-
-export default async function BlogPostPage({ params }: { params: { slug: string; lang: string } }) {
-  const post = await getPost(params.slug);
-
-  if (!post) {
-    notFound();
+  if (notFound || !post) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold mb-4">404 - Post Not Found</h1>
+          <p className="text-muted-foreground mb-6">The blog post you're looking for doesn't exist.</p>
+          <a href="/en/blog" className="text-primary hover:underline">← Back to Blog</a>
+        </div>
+      </div>
+    );
   }
 
   const title = post.title[params.lang] || post.title.en;
