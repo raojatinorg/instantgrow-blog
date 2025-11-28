@@ -47,9 +47,13 @@ export default function PremiumAdminDashboard() {
 
   const fetchPosts = async () => {
     try {
-      const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
+      const postsRef = collection(db, 'posts');
+      const q = query(postsRef, orderBy('createdAt', 'desc'));
       const snapshot = await getDocs(q);
-      const postsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost));
+      const postsData = snapshot.docs.map(doc => ({ 
+        id: doc.id, 
+        ...doc.data() 
+      } as BlogPost));
       setPosts(postsData);
       
       const published = postsData.filter(p => p.published).length;
@@ -60,8 +64,11 @@ export default function PremiumAdminDashboard() {
         drafts: postsData.length - published,
         views: totalViews,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching posts:', error);
+      if (error?.code === 'permission-denied') {
+        alert('⚠️ Firebase permission error. Check Firestore rules.');
+      }
     }
   };
 
@@ -131,9 +138,21 @@ export default function PremiumAdminDashboard() {
   };
 
   const handleImageUpload = async (file: File): Promise<string> => {
-    const storageRef = ref(storage, `images/${Date.now()}_${file.name}`);
-    await uploadBytes(storageRef, file);
-    return await getDownloadURL(storageRef);
+    try {
+      if (!file) throw new Error('No file selected');
+      if (file.size > 5 * 1024 * 1024) throw new Error('File too large (max 5MB)');
+      
+      const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+      const storageRef = ref(storage, `images/${fileName}`);
+      
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      
+      return url;
+    } catch (error: any) {
+      console.error('Image upload error:', error);
+      throw new Error(`Image upload failed: ${error.message}`);
+    }
   };
 
   const autoGenerateSEO = () => {
@@ -183,30 +202,37 @@ export default function PremiumAdminDashboard() {
       let coverImageUrl = currentPost.coverImage || '';
       
       if (imageFile) {
-        coverImageUrl = await handleImageUpload(imageFile);
+        try {
+          coverImageUrl = await handleImageUpload(imageFile);
+        } catch (imgError) {
+          console.error('Image upload error:', imgError);
+          alert('⚠️ Image upload failed, but continuing with post save...');
+        }
       }
 
       const slug = currentPost.slug || generateSlug(currentPost.title.en);
       const readTime = calculateReadTime(currentPost.content?.en || '');
 
-      // Ensure SEO fields are populated
-      const seoData = {
-        metaTitle: currentPost.seo?.metaTitle || { en: currentPost.title.en },
-        metaDescription: currentPost.seo?.metaDescription || { en: currentPost.excerpt?.en || '' },
-        ogImage: coverImageUrl,
-        keywords: currentPost.seo?.keywords || [],
-      };
-
+      // Ensure all required fields are present
       const postData = {
         slug,
-        title: currentPost.title,
-        excerpt: currentPost.excerpt,
-        content: currentPost.content,
+        title: currentPost.title || { en: '' },
+        excerpt: currentPost.excerpt || { en: '' },
+        content: currentPost.content || { en: '' },
         coverImage: coverImageUrl,
         category: currentPost.category || 'Uncategorized',
         tags: currentPost.tags || [],
-        author: currentPost.author,
-        seo: seoData,
+        author: currentPost.author || {
+          name: 'Rao Jatin',
+          avatar: 'https://ui-avatars.com/api/?name=Rao+Jatin&size=150&background=F59E0B&color=fff',
+          bio: 'Professional Web Developer',
+        },
+        seo: {
+          metaTitle: currentPost.seo?.metaTitle || { en: currentPost.title.en },
+          metaDescription: currentPost.seo?.metaDescription || { en: currentPost.excerpt?.en || '' },
+          ogImage: coverImageUrl,
+          keywords: currentPost.seo?.keywords || [],
+        },
         published: currentPost.published || false,
         featured: currentPost.featured || false,
         readTime,
@@ -215,24 +241,27 @@ export default function PremiumAdminDashboard() {
 
       if (currentPost.id) {
         await updateDoc(doc(db, 'posts', currentPost.id), postData);
+        alert('✅ Post updated successfully!');
       } else {
         await addDoc(collection(db, 'posts'), {
           ...postData,
           views: 0,
           createdAt: new Date().toISOString(),
         });
+        alert('✅ Post created successfully!');
       }
 
       setIsEditing(false);
       setCurrentPost(null);
       setImageFile(null);
-      fetchPosts();
-      alert('✅ Post saved successfully!');
-    } catch (error) {
-      console.error('Error saving:', error);
-      alert('❌ Error saving post. Please try again.');
+      await fetchPosts();
+    } catch (error: any) {
+      console.error('Error saving post:', error);
+      const errorMessage = error?.message || 'Unknown error';
+      alert(`❌ Error: ${errorMessage}\n\nPlease check:\n1. Firebase connection\n2. Firestore rules\n3. All required fields filled`);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   if (isEditing && currentPost) {
