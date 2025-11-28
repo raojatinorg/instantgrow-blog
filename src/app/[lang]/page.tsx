@@ -2,12 +2,27 @@ import { BlogPost } from '@/types';
 import BlogCard from '@/components/BlogCard';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { collection, getDocs, query, where, orderBy, limit } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
-export const revalidate = 60;
+export const revalidate = 0;
+export const dynamic = 'force-dynamic';
 
 export default async function HomePage({ params }: { params: { lang: string } }) {
-  const featured: BlogPost[] = [];
-  const latest: BlogPost[] = [];
+  let featured: BlogPost[] = [];
+  let latest: BlogPost[] = [];
+
+  try {
+    const postsRef = collection(db, 'posts');
+    const publishedQuery = query(postsRef, where('published', '==', true), orderBy('createdAt', 'desc'));
+    const snapshot = await getDocs(publishedQuery);
+    const allPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost));
+    
+    featured = allPosts.filter(p => p.featured).slice(0, 3);
+    latest = allPosts.slice(0, 6);
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -37,9 +52,11 @@ export default async function HomePage({ params }: { params: { lang: string } })
       <section>
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-3xl font-playfair font-bold">Latest Articles</h2>
-          <Link href={`/${params.lang}/blog`}>
-            <Button variant="outline">View All</Button>
-          </Link>
+          {latest.length > 0 && (
+            <Link href={`/${params.lang}/blog`}>
+              <Button variant="outline">View All</Button>
+            </Link>
+          )}
         </div>
         {latest.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">

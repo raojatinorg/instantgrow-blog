@@ -5,8 +5,20 @@ export async function uploadToImgBB(file: File): Promise<string> {
     if (!file) throw new Error('No file provided');
     if (file.size > 32 * 1024 * 1024) throw new Error('File too large (max 32MB)');
 
+    // Convert file to base64
+    const base64 = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result as string;
+        const base64String = result.split(',')[1];
+        resolve(base64String);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('image', base64);
 
     const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
       method: 'POST',
@@ -14,8 +26,9 @@ export async function uploadToImgBB(file: File): Promise<string> {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error?.message || 'ImgBB upload failed');
+      const errorText = await response.text();
+      console.error('ImgBB error response:', errorText);
+      throw new Error(`Upload failed: ${response.status}`);
     }
 
     const data = await response.json();
