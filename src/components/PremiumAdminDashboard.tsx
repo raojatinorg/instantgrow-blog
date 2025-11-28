@@ -141,15 +141,8 @@ export default function PremiumAdminDashboard() {
 
   const handleImageUpload = async (file: File): Promise<string> => {
     try {
-      if (!file) throw new Error('No file selected');
-      if (file.size > 5 * 1024 * 1024) throw new Error('File too large (max 5MB)');
-      
-      const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
-      const storageRef = ref(storage, `images/${fileName}`);
-      
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
-      
+      const { uploadToImgBB } = await import('@/lib/imgbb-upload');
+      const url = await uploadToImgBB(file);
       return url;
     } catch (error: any) {
       console.error('Image upload error:', error);
@@ -231,7 +224,7 @@ export default function PremiumAdminDashboard() {
       
       if (imageFile) {
         try {
-          coverImageUrl = await handleImageUpload(imageFile);
+          coverImageUrl = await handleImageUploadWithProgress(imageFile);
         } catch (imgError) {
           console.error('Image upload error:', imgError);
           alert('⚠️ Image upload failed, but continuing with post save...');
@@ -270,25 +263,48 @@ export default function PremiumAdminDashboard() {
       if (currentPost.id) {
         await updateDoc(doc(db, 'posts', currentPost.id), postData);
         alert('✅ Post updated successfully!');
+        setIsEditing(false);
+        setCurrentPost(null);
+        setImageFile(null);
+        await fetchPosts();
       } else {
         await addDoc(collection(db, 'posts'), {
           ...postData,
           views: 0,
           createdAt: new Date().toISOString(),
         });
-        alert('✅ Post created successfully!');
+        
+        if (postData.published) {
+          window.location.href = `/en/admin/success?slug=${slug}&title=${encodeURIComponent(postData.title.en)}`;
+        } else {
+          alert('✅ Post saved as draft!');
+          setIsEditing(false);
+          setCurrentPost(null);
+          setImageFile(null);
+          await fetchPosts();
+        }
       }
-
-      setIsEditing(false);
-      setCurrentPost(null);
-      setImageFile(null);
-      await fetchPosts();
     } catch (error: any) {
       console.error('Error saving post:', error);
       const errorMessage = error?.message || 'Unknown error';
       alert(`❌ Error: ${errorMessage}\n\nPlease check:\n1. Firebase connection\n2. Firestore rules\n3. All required fields filled`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const [uploadProgress, setUploadProgress] = useState('');
+
+  const handleImageUploadWithProgress = async (file: File): Promise<string> => {
+    try {
+      setUploadProgress('Uploading image...');
+      const url = await handleImageUpload(file);
+      setUploadProgress('Image uploaded successfully!');
+      setTimeout(() => setUploadProgress(''), 2000);
+      return url;
+    } catch (error: any) {
+      setUploadProgress('');
+      throw error;
     }
   };
 
@@ -603,14 +619,21 @@ export default function PremiumAdminDashboard() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-4 pt-4 border-t">
-              <Button onClick={handleSave} disabled={loading} className="bg-primary hover:bg-primary/90" size="lg">
-                <Save className="h-4 w-4 mr-2" />
-                {loading ? 'Saving...' : 'Save Post'}
-              </Button>
-              <Button variant="outline" onClick={() => setIsEditing(false)} size="lg">
-                Cancel
-              </Button>
+            <div className="space-y-4 pt-4 border-t">
+              {uploadProgress && (
+                <div className="bg-primary/10 text-primary px-4 py-2 rounded-lg text-sm font-semibold">
+                  {uploadProgress}
+                </div>
+              )}
+              <div className="flex gap-4">
+                <Button onClick={handleSave} disabled={loading} className="bg-primary hover:bg-primary/90" size="lg">
+                  <Save className="h-4 w-4 mr-2" />
+                  {loading ? 'Saving...' : 'Save Post'}
+                </Button>
+                <Button variant="outline" onClick={() => setIsEditing(false)} size="lg">
+                  Cancel
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
