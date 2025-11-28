@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Sparkles, Copy, Check } from 'lucide-react';
+import { Sparkles, Copy, Check, Zap } from 'lucide-react';
 
 export default function BlogPromptGenerator() {
   const [topic, setTopic] = useState('');
@@ -17,65 +17,104 @@ export default function BlogPromptGenerator() {
       return;
     }
 
-    const generatedPrompt = `Create a comprehensive, SEO-optimized blog post about "${topic}" with the following structure:
+    const generatedPrompt = `Create a comprehensive, SEO-optimized blog post about "${topic}" that will rank #1 on Google.
 
-**Title:**
-Create a compelling, click-worthy title (50-60 characters) that includes the main keyword and creates curiosity.
+🎯 IMPORTANT: Format your response EXACTLY as shown below so I can copy-paste directly into my blog admin panel.
 
-**Excerpt:**
-Write a 150-160 character meta description that summarizes the blog post and includes the main keyword. Make it engaging and actionable.
+---START OF BLOG POST---
 
-**Content:**
-Write a detailed, well-structured blog post (minimum 1500 words) with:
+TITLE:
+[Write a compelling, click-worthy title (50-60 characters) with main keyword]
 
-1. **Introduction** (150-200 words)
-   - Hook the reader with a compelling opening
-   - Explain why this topic matters
-   - Preview what they'll learn
+EXCERPT:
+[Write 150-160 character meta description that's engaging and includes main keyword]
 
-2. **Main Content** (1200-1400 words)
-   - Use H2 and H3 headings for structure
-   - Include 5-7 main sections
-   - Add bullet points and numbered lists
-   - Use short paragraphs (2-3 sentences max)
-   - Include practical examples and actionable tips
-   - Add statistics or data where relevant
-   - Use bold text for emphasis on key points
+CATEGORY:
+[Choose ONE: Website Development, SEO, Brand Building, Digital Marketing, Business Growth]
 
-3. **Conclusion** (100-150 words)
-   - Summarize key takeaways
-   - Include a clear call-to-action
-   - Encourage engagement
+TAGS:
+[Provide 5-7 comma-separated tags: tag1, tag2, tag3, tag4, tag5]
 
-**Formatting Requirements:**
-- Use HTML tags: <h2>, <h3>, <p>, <strong>, <ul>, <li>, <ol>
-- Make content scannable and easy to read
-- Include transition words between sections
-- Write in a conversational, engaging tone
-- Target audience: Business owners and entrepreneurs
+CONTENT:
+[Write 2000+ word blog post in HTML format with these requirements:
 
-**Category:**
-Suggest the most appropriate category from: Website Development, SEO, Brand Building, Digital Marketing, Business Growth
 
-**Tags:**
-Provide 5-7 relevant tags (comma-separated) that are SEO-friendly and describe the content
+1. Use ONLY these HTML tags: <h2>, <h3>, <p>, <strong>, <ul>, <li>, <ol>, <a>
+2. Start with engaging introduction (200 words)
+3. Include 6-8 main sections with <h2> headings
+4. Use <h3> for subsections
+5. Add bullet points with <ul> and <li>
+6. Use <strong> for important keywords
+7. Keep paragraphs short (2-3 sentences)
+8. Include actionable tips and examples
+9. Add statistics and data where relevant
+10. End with strong conclusion and CTA
+11. Write in conversational, engaging tone
+12. Target audience: Business owners and entrepreneurs
+13. Naturally include keywords 8-10 times
+14. Use transition words between sections
 
-**Cover Image Prompt:**
-Create a detailed DALL-E/Midjourney prompt for a professional 16:9 cover image that represents "${topic}". The prompt should describe:
-- Main subject/concept
-- Style (modern, professional, minimalist)
-- Color scheme (golden, green, black accents)
-- Composition (centered, rule of thirds)
-- Mood/atmosphere
-- Technical specs: "16:9 aspect ratio, high quality, professional photography style"
+Example structure:
+<h2>Introduction Heading</h2>
+<p>Opening paragraph with hook...</p>
 
-**SEO Keywords:**
-List 10 relevant keywords and phrases to naturally include in the content
+<h2>Main Section 1</h2>
+<p>Content here...</p>
+<ul>
+<li>Bullet point 1</li>
+<li>Bullet point 2</li>
+</ul>
 
-**Internal Linking Suggestions:**
-Suggest 3-5 related topics that could be linked to from this post
+<h3>Subsection</h3>
+<p>More detailed content...</p>
 
-Now generate the complete blog post following this structure.`;
+[Continue with 5-7 more sections...]
+
+<h2>Conclusion</h2>
+<p>Summary and call-to-action...</p>
+]
+
+META TITLE (SEO):
+[60 characters max, keyword-rich title for search engines]
+
+META DESCRIPTION (SEO):
+[160 characters max, compelling description for search results]
+
+FOCUS KEYWORDS:
+[10 comma-separated keywords: keyword1, keyword2, keyword3...]
+
+COVER IMAGE PROMPT:
+[DALL-E/Midjourney prompt: "Professional 16:9 image of ${topic}, modern minimalist style, golden and green color accents, high quality, business photography, clean composition, professional lighting"]
+
+---END OF BLOG POST---
+
+📋 COPY-PASTE INSTRUCTIONS:
+1. Copy everything between START and END markers
+2. In admin panel, paste Title in title field
+3. Paste Excerpt in excerpt field
+4. Select Category from dropdown
+5. Paste Tags in tags field
+6. Switch to HTML mode and paste Content
+7. Paste Meta Title in SEO meta title field
+8. Paste Meta Description in SEO meta description field
+9. Paste Focus Keywords in keywords field
+10. Use Cover Image Prompt in DALL-E to generate image
+11. Upload generated image
+12. Click Save!
+
+🚀 SEO OPTIMIZATION CHECKLIST:
+✅ Title includes main keyword
+✅ First paragraph includes keyword
+✅ H2 headings include variations of keyword
+✅ Content is 2000+ words
+✅ Internal linking opportunities identified
+✅ Meta description is compelling
+✅ Keywords used naturally throughout
+✅ Content provides real value
+✅ Clear call-to-action included
+✅ Mobile-friendly HTML structure
+
+Now generate the complete blog post in the exact format above.`;
 
     setPrompt(generatedPrompt);
   };

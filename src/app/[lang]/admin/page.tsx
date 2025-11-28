@@ -6,7 +6,7 @@ import { auth } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import EnhancedAdminDashboard from '@/components/EnhancedAdminDashboard';
+import PremiumAdminDashboard from '@/components/PremiumAdminDashboard';
 import BlogPromptGenerator from '@/components/BlogPromptGenerator';
 
 export default function AdminPage() {
@@ -121,7 +121,7 @@ export default function AdminPage() {
           </div>
         </div>
       </div>
-      {showPromptGenerator ? <BlogPromptGenerator /> : <EnhancedAdminDashboard />}
+      {showPromptGenerator ? <BlogPromptGenerator /> : <PremiumAdminDashboard />}
     </div>
   );
 }
