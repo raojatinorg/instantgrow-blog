@@ -1,8 +1,10 @@
-import Link from 'next/link';
+'use client';
+
 import Image from 'next/image';
 import { BlogPost } from '@/types';
 import { Card, CardContent, CardFooter } from './ui/card';
 import { Clock } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface BlogCardProps {
   post: BlogPost;
@@ -10,9 +12,22 @@ interface BlogCardProps {
 }
 
 export default function BlogCard({ post, lang }: BlogCardProps) {
+  const router = useRouter();
+  
+  const handleClick = () => {
+    const url = `/${lang}/blog/${post.slug}`;
+    console.log('🔗 Clicking blog card');
+    console.log('📝 Post:', post.title.en);
+    console.log('🔗 Slug:', post.slug);
+    console.log('🌐 URL:', url);
+    router.push(url);
+  };
+  
   return (
-    <Link href={`/${lang}/blog/${post.slug}`}>
-      <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full border hover:border-primary/50">
+    <Card 
+      onClick={handleClick}
+      className="overflow-hidden hover:shadow-lg transition-shadow duration-300 h-full border hover:border-primary/50 cursor-pointer"
+    >
         <div className="relative h-48 w-full bg-muted">
           {post.coverImage ? (
             <Image
@@ -46,7 +61,6 @@ export default function BlogCard({ post, lang }: BlogCardProps) {
           </div>
           <span>{new Date(post.createdAt).toLocaleDateString()}</span>
         </CardFooter>
-      </Card>
-    </Link>
+    </Card>
   );
 }
