@@ -16,17 +16,28 @@ export default function BlogPage({ params }: { params: { lang: string } }) {
 
   useEffect(() => {
     async function fetchPosts() {
-      const q = query(
-        collection(db, 'posts'),
-        where('published', '==', true),
-        orderBy('createdAt', 'desc')
-      );
-      
-      const snapshot = await getDocs(q);
-      const postsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost));
-      setPosts(postsData);
-      setFilteredPosts(postsData);
-      setLoading(false);
+      try {
+        const q = query(
+          collection(db, 'posts'),
+          where('published', '==', true),
+          orderBy('createdAt', 'desc')
+        );
+        
+        const snapshot = await getDocs(q);
+        const postsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost));
+        console.log('✅ Blog page: Fetched posts:', postsData.length);
+        setPosts(postsData);
+        setFilteredPosts(postsData);
+      } catch (error: any) {
+        console.error('❌ Blog page error:', error);
+        console.error('Error code:', error?.code);
+        console.error('Error message:', error?.message);
+        if (error?.code === 'failed-precondition') {
+          console.error('🔥 FIRESTORE INDEX MISSING! Deploy indexes with: firebase deploy --only firestore:indexes');
+        }
+      } finally {
+        setLoading(false);
+      }
     }
 
     fetchPosts();

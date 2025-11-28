@@ -22,7 +22,11 @@ export default function BlogPostPage({ params }: { params: { slug: string; lang:
         );
         const snapshot = await getDocs(q);
         
+        console.log('🔍 Searching for slug:', params.slug);
+        console.log('📄 Found posts:', snapshot.docs.length);
+        
         if (snapshot.empty) {
+          console.warn('⚠️ Post not found or not published');
           setNotFound(true);
           setLoading(false);
           return;
@@ -31,14 +35,20 @@ export default function BlogPostPage({ params }: { params: { slug: string; lang:
         const postDoc = snapshot.docs[0];
         const postData = { id: postDoc.id, ...postDoc.data() } as BlogPost;
         
+        console.log('✅ Post loaded:', postData.title.en);
         setPost(postData);
         
         // Increment view count
         await updateDoc(doc(db, 'posts', postDoc.id), {
           views: increment(1)
         });
-      } catch (error) {
-        console.error('Error fetching post:', error);
+      } catch (error: any) {
+        console.error('❌ Error fetching post:', error);
+        console.error('Error code:', error?.code);
+        console.error('Error message:', error?.message);
+        if (error?.code === 'failed-precondition') {
+          console.error('🔥 FIRESTORE INDEX MISSING! Deploy indexes with: firebase deploy --only firestore:indexes');
+        }
         setNotFound(true);
       } finally {
         setLoading(false);

@@ -21,10 +21,16 @@ export default function HomePage({ params }: { params: { lang: string } }) {
         const snapshot = await getDocs(publishedQuery);
         const allPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost));
         
+        console.log('✅ Home page: Fetched posts:', allPosts.length);
         setFeatured(allPosts.filter(p => p.featured).slice(0, 3));
         setLatest(allPosts.slice(0, 6));
-      } catch (error) {
-        console.error('Error fetching posts:', error);
+      } catch (error: any) {
+        console.error('❌ Home page error:', error);
+        console.error('Error code:', error?.code);
+        console.error('Error message:', error?.message);
+        if (error?.code === 'failed-precondition') {
+          console.error('🔥 FIRESTORE INDEX MISSING! Deploy indexes with: firebase deploy --only firestore:indexes');
+        }
       } finally {
         setLoading(false);
       }
