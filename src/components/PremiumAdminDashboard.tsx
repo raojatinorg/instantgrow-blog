@@ -231,8 +231,19 @@ export default function PremiumAdminDashboard() {
         }
       }
 
-      const slug = currentPost.slug || generateSlug(currentPost.title.en);
+      // Generate slug - ALWAYS from title to ensure consistency
+      const slug = generateSlug(currentPost.title.en);
       const readTime = calculateReadTime(currentPost.content?.en || '');
+
+      console.log('💾 Saving post with slug:', slug);
+      console.log('📝 Title:', currentPost.title.en);
+      console.log('✅ Published:', currentPost.published);
+      
+      if (!slug || slug.trim() === '') {
+        alert('❌ Error: Could not generate slug from title!');
+        setLoading(false);
+        return;
+      }
 
       // Ensure all required fields are present
       const postData = {

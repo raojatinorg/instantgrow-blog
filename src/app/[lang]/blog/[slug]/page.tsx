@@ -15,33 +15,55 @@ export default function BlogPostPage({ params }: { params: { slug: string; lang:
   useEffect(() => {
     async function fetchPost() {
       try {
-        const q = query(
-          collection(db, 'posts'),
-          where('slug', '==', params.slug),
-          where('published', '==', true)
-        );
-        const snapshot = await getDocs(q);
-        
         console.log('🔍 Searching for slug:', params.slug);
-        console.log('📄 Found posts:', snapshot.docs.length);
         
-        if (snapshot.empty) {
+        // Method 1: Try with slug + published
+        let q = query(
+          collection(db, 'posts'),
+          where('slug', '==', params.slug)
+        );
+        let snapshot = await getDocs(q);
+        
+        console.log('📄 Found posts (all):', snapshot.docs.length);
+        
+        // Filter published posts
+        let publishedPosts = snapshot.docs.filter(doc => doc.data().published === true);
+        console.log('📄 Found published posts:', publishedPosts.length);
+        
+        if (publishedPosts.length === 0) {
+          // Method 2: Fallback - get all published posts and find by slug
+          console.log('⚠️ Trying fallback method...');
+          q = query(
+            collection(db, 'posts'),
+            where('published', '==', true)
+          );
+          snapshot = await getDocs(q);
+          publishedPosts = snapshot.docs.filter(doc => doc.data().slug === params.slug);
+          console.log('📄 Fallback found:', publishedPosts.length);
+        }
+        
+        if (publishedPosts.length === 0) {
           console.warn('⚠️ Post not found or not published');
           setNotFound(true);
           setLoading(false);
           return;
         }
         
-        const postDoc = snapshot.docs[0];
+        const postDoc = publishedPosts[0];
         const postData = { id: postDoc.id, ...postDoc.data() } as BlogPost;
         
         console.log('✅ Post loaded:', postData.title.en);
+        console.log('✅ Post slug:', postData.slug);
         setPost(postData);
         
         // Increment view count
-        await updateDoc(doc(db, 'posts', postDoc.id), {
-          views: increment(1)
-        });
+        try {
+          await updateDoc(doc(db, 'posts', postDoc.id), {
+            views: increment(1)
+          });
+        } catch (viewError) {
+          console.warn('View count update failed (non-critical)');
+        }
       } catch (error: any) {
         console.error('❌ Error fetching post:', error);
         console.error('Error code:', error?.code);
@@ -69,12 +91,16 @@ export default function BlogPostPage({ params }: { params: { slug: string; lang:
   }
 
   if (notFound || !post) {
+    console.error('❌ POST NOT FOUND - Redirecting would happen here');
+    console.error('Slug searched:', params.slug);
+    console.error('Language:', params.lang);
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">404 - Post Not Found</h1>
-          <p className="text-muted-foreground mb-6">The blog post you're looking for doesn't exist.</p>
-          <a href="/en/blog" className="text-primary hover:underline">← Back to Blog</a>
+          <p className="text-muted-foreground mb-6">Slug: {params.slug}</p>
+          <p className="text-sm text-muted-foreground mb-6">The blog post you're looking for doesn't exist or is not published.</p>
+          <a href={`/${params.lang}/blog`} className="text-primary hover:underline">← Back to Blog</a>
         </div>
       </div>
     );

@@ -17,20 +17,35 @@ export default function HomePage({ params }: { params: { lang: string } }) {
     async function fetchPosts() {
       try {
         const postsRef = collection(db, 'posts');
-        const publishedQuery = query(postsRef, where('published', '==', true), orderBy('createdAt', 'desc'));
-        const snapshot = await getDocs(publishedQuery);
-        const allPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost));
+        let allPosts: BlogPost[] = [];
         
-        console.log('✅ Home page: Fetched posts:', allPosts.length);
+        try {
+          // Try with index
+          const publishedQuery = query(postsRef, where('published', '==', true), orderBy('createdAt', 'desc'));
+          const snapshot = await getDocs(publishedQuery);
+          allPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost));
+          console.log('✅ Home page: Fetched posts (indexed):', allPosts.length);
+        } catch (indexError: any) {
+          if (indexError?.code === 'failed-precondition') {
+            console.warn('⚠️ Index not ready, using fallback...');
+            // Fallback: Get all posts and filter
+            const snapshot = await getDocs(postsRef);
+            allPosts = snapshot.docs
+              .map(doc => ({ id: doc.id, ...doc.data() } as BlogPost))
+              .filter(p => p.published === true)
+              .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            console.log('✅ Home page: Fetched posts (fallback):', allPosts.length);
+          } else {
+            throw indexError;
+          }
+        }
+        
         setFeatured(allPosts.filter(p => p.featured).slice(0, 3));
         setLatest(allPosts.slice(0, 6));
       } catch (error: any) {
         console.error('❌ Home page error:', error);
         console.error('Error code:', error?.code);
         console.error('Error message:', error?.message);
-        if (error?.code === 'failed-precondition') {
-          console.error('🔥 FIRESTORE INDEX MISSING! Deploy indexes with: firebase deploy --only firestore:indexes');
-        }
       } finally {
         setLoading(false);
       }
