@@ -174,13 +174,14 @@ export default function BlogPostPage({ params }: { params: { slug: string; lang:
 
         {/* Cover Image */}
         {post.coverImage && (
-          <div className="relative w-full h-[400px] mb-12 rounded-lg overflow-hidden">
+          <div className="relative w-full h-[400px] mb-12 rounded-lg overflow-hidden bg-muted">
             <Image
               src={post.coverImage}
               alt={title}
               fill
               className="object-cover"
               priority
+              unoptimized
             />
           </div>
         )}
@@ -235,6 +236,7 @@ export default function BlogPostPage({ params }: { params: { slug: string; lang:
               width={80}
               height={80}
               className="rounded-full"
+              unoptimized
             />
             <div>
               <h3 className="text-xl font-bold mb-2">About {post.author.name}</h3>
