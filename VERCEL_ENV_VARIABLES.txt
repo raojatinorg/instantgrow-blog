@@ -1,0 +1,54 @@
+===========================================
+VERCEL ENVIRONMENT VARIABLES
+Copy-Paste These One by One
+===========================================
+
+Variable 1:
+-----------
+Name: NEXT_PUBLIC_FIREBASE_API_KEY
+Value: AIzaSyDKAu9JvYmpQNvH1ES_Ax3q6qUFZX061Rw
+
+Variable 2:
+-----------
+Name: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+Value: raosuplode.firebaseapp.com
+
+Variable 3:
+-----------
+Name: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+Value: raosuplode
+
+Variable 4:
+-----------
+Name: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+Value: raosuplode.firebasestorage.app
+
+Variable 5:
+-----------
+Name: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+Value: 275156697009
+
+Variable 6:
+-----------
+Name: NEXT_PUBLIC_FIREBASE_APP_ID
+Value: 1:275156697009:web:988cc8dc82f59e0535c790
+
+Variable 7:
+-----------
+Name: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+Value: G-LCFP6Z0VZR
+
+===========================================
+HOW TO ADD IN VERCEL:
+===========================================
+
+1. Vercel dashboard mein jao
+2. "Environment Variables" section dekho
+3. Click "Add" button
+4. Name copy karo (e.g., NEXT_PUBLIC_FIREBASE_API_KEY)
+5. Value copy karo (e.g., AIzaSyDKAu9JvYmpQNvH1ES_Ax3q6qUFZX061Rw)
+6. Click "Add"
+7. Repeat for all 7 variables
+8. Click "Deploy"
+
+Total Time: 2 minutes
