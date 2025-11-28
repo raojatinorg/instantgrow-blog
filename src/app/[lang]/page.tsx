@@ -1,28 +1,36 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import { BlogPost } from '@/types';
 import BlogCard from '@/components/BlogCard';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { collection, getDocs, query, where, orderBy, limit } from 'firebase/firestore';
+import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
-export const revalidate = 0;
-export const dynamic = 'force-dynamic';
+export default function HomePage({ params }: { params: { lang: string } }) {
+  const [featured, setFeatured] = useState<BlogPost[]>([]);
+  const [latest, setLatest] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default async function HomePage({ params }: { params: { lang: string } }) {
-  let featured: BlogPost[] = [];
-  let latest: BlogPost[] = [];
-
-  try {
-    const postsRef = collection(db, 'posts');
-    const publishedQuery = query(postsRef, where('published', '==', true), orderBy('createdAt', 'desc'));
-    const snapshot = await getDocs(publishedQuery);
-    const allPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost));
-    
-    featured = allPosts.filter(p => p.featured).slice(0, 3);
-    latest = allPosts.slice(0, 6);
-  } catch (error) {
-    console.error('Error fetching posts:', error);
-  }
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        const postsRef = collection(db, 'posts');
+        const publishedQuery = query(postsRef, where('published', '==', true), orderBy('createdAt', 'desc'));
+        const snapshot = await getDocs(publishedQuery);
+        const allPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as BlogPost));
+        
+        setFeatured(allPosts.filter(p => p.featured).slice(0, 3));
+        setLatest(allPosts.slice(0, 6));
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPosts();
+  }, []);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -58,7 +66,11 @@ export default async function HomePage({ params }: { params: { lang: string } })
             </Link>
           )}
         </div>
-        {latest.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-12 text-muted-foreground">
+            <p className="text-lg mb-4">Loading...</p>
+          </div>
+        ) : latest.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             <p className="text-lg mb-4">No posts yet. Check back soon for amazing content!</p>
           </div>
