@@ -1,119 +1,110 @@
-'use client';
-
-import { useState, useEffect } from 'react';
 import { BlogPost } from '@/types';
 import Image from 'next/image';
 import { Clock, Calendar, User, Eye } from 'lucide-react';
-import { collection, query, where, getDocs, doc, updateDoc, increment } from 'firebase/firestore';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { useParams, useRouter } from 'next/navigation';
+import { Metadata } from 'next';
 
-export default function BlogPostPage() {
-  const params = useParams();
-  const router = useRouter();
-  const slug = params.slug as string;
-  const lang = params.lang as string;
-  const [post, setPost] = useState<BlogPost | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
+// Enable ISR - Revalidate every 60 seconds
+export const revalidate = 60;
 
-  useEffect(() => {
-    async function fetchPost() {
-      try {
-        console.log('🔍 Searching for slug:', slug);
-        
-        // Method 1: Try with slug + published
-        let q = query(
-          collection(db, 'posts'),
-          where('slug', '==', slug)
-        );
-        let snapshot = await getDocs(q);
-        
-        console.log('📄 Found posts (all):', snapshot.docs.length);
-        
-        // Filter published posts
-        let publishedPosts = snapshot.docs.filter(doc => doc.data().published === true);
-        console.log('📄 Found published posts:', publishedPosts.length);
-        
-        if (publishedPosts.length === 0) {
-          // Method 2: Fallback - get all published posts and find by slug
-          console.log('⚠️ Trying fallback method...');
-          q = query(
-            collection(db, 'posts'),
-            where('published', '==', true)
-          );
-          snapshot = await getDocs(q);
-          publishedPosts = snapshot.docs.filter(doc => doc.data().slug === slug);
-          console.log('📄 Fallback found:', publishedPosts.length);
-        }
-        
-        if (publishedPosts.length === 0) {
-          console.warn('⚠️ Post not found or not published');
-          setNotFound(true);
-          setLoading(false);
-          return;
-        }
-        
-        const postDoc = publishedPosts[0];
-        const postData = { id: postDoc.id, ...postDoc.data() } as BlogPost;
-        
-        console.log('✅ Post loaded:', postData.title.en);
-        console.log('✅ Post slug:', postData.slug);
-        setPost(postData);
-        
-        // Increment view count
-        try {
-          await updateDoc(doc(db, 'posts', postDoc.id), {
-            views: increment(1)
-          });
-        } catch (viewError) {
-          console.warn('View count update failed (non-critical)');
-        }
-      } catch (error: any) {
-        console.error('❌ Error fetching post:', error);
-        console.error('Error code:', error?.code);
-        console.error('Error message:', error?.message);
-        if (error?.code === 'failed-precondition') {
-          console.error('🔥 FIRESTORE INDEX MISSING! Deploy indexes with: firebase deploy --only firestore:indexes');
-        }
-        setNotFound(true);
-      } finally {
-        setLoading(false);
-      }
+// Generate static params for all blog posts
+export async function generateStaticParams() {
+  try {
+    const snapshot = await getDocs(collection(db, 'posts'));
+    const posts = snapshot.docs.map(doc => ({
+      slug: doc.data().slug,
+      lang: 'en'
+    }));
+    
+    console.log('🔨 Generating static pages for:', posts.length, 'posts');
+    return posts.filter(p => p.slug);
+  } catch (error) {
+    console.error('Error generating static params:', error);
+    return [];
+  }
+}
+
+// Generate metadata for SEO
+export async function generateMetadata({ params }: { params: { slug: string; lang: string } }): Promise<Metadata> {
+  try {
+    const q = query(collection(db, 'posts'), where('slug', '==', params.slug));
+    const snapshot = await getDocs(q);
+    
+    if (!snapshot.empty) {
+      const post = snapshot.docs[0].data() as BlogPost;
+      const title = post.title[params.lang] || post.title.en;
+      const excerpt = post.excerpt[params.lang] || post.excerpt.en;
+      
+      return {
+        title: post.seo?.metaTitle?.[params.lang] || title,
+        description: post.seo?.metaDescription?.[params.lang] || excerpt,
+        keywords: post.seo?.keywords?.join(', '),
+        openGraph: {
+          title: title,
+          description: excerpt,
+          images: [post.coverImage],
+          type: 'article',
+        },
+        twitter: {
+          card: 'summary_large_image',
+          title: title,
+          description: excerpt,
+          images: [post.coverImage],
+        },
+      };
     }
-    fetchPost();
-  }, [slug]);
+  } catch (error) {
+    console.error('Error generating metadata:', error);
+  }
+  
+  return {
+    title: 'Blog Post',
+    description: 'Read our latest blog post',
+  };
+}
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p>Loading...</p>
-        </div>
-      </div>
+export default async function BlogPostPage({ params }: { params: { slug: string; lang: string } }) {
+  let post: BlogPost | null = null;
+  let notFound = false;
+
+  try {
+    const q = query(
+      collection(db, 'posts'),
+      where('slug', '==', params.slug)
     );
+    const snapshot = await getDocs(q);
+    
+    if (!snapshot.empty) {
+      const publishedPosts = snapshot.docs.filter(doc => doc.data().published === true);
+      if (publishedPosts.length > 0) {
+        post = { id: publishedPosts[0].id, ...publishedPosts[0].data() } as BlogPost;
+      } else {
+        notFound = true;
+      }
+    } else {
+      notFound = true;
+    }
+  } catch (error) {
+    console.error('Error fetching post:', error);
+    notFound = true;
   }
 
   if (notFound || !post) {
-    console.error('❌ POST NOT FOUND - Redirecting would happen here');
-    console.error('Slug searched:', slug);
-    console.error('Language:', lang);
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">404 - Post Not Found</h1>
-          <p className="text-muted-foreground mb-6">Slug: {slug}</p>
-          <p className="text-sm text-muted-foreground mb-6">The blog post you're looking for doesn't exist or is not published.</p>
-          <a href={`/${lang}/blog`} className="text-primary hover:underline">← Back to Blog</a>
+          <p className="text-muted-foreground mb-6">Slug: {params.slug}</p>
+          <a href={`/${params.lang}/blog`} className="text-primary hover:underline">← Back to Blog</a>
         </div>
       </div>
     );
   }
 
-  const title = post.title[lang] || post.title.en;
-  const excerpt = post.excerpt[lang] || post.excerpt.en;
-  const content = post.content[lang] || post.content.en;
+  const title = post.title[params.lang] || post.title.en;
+  const excerpt = post.excerpt[params.lang] || post.excerpt.en;
+  const content = post.content[params.lang] || post.content.en;
 
   // JSON-LD Schema for SEO
   const jsonLd = {
@@ -139,7 +130,7 @@ export default function BlogPostPage() {
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://instantgrow.shop/${lang}/blog/${slug}`,
+      '@id': `https://instantgrow.shop/${params.lang}/blog/${params.slug}`,
     },
     keywords: post.seo?.keywords?.join(', '),
     articleSection: post.category,
@@ -156,9 +147,9 @@ export default function BlogPostPage() {
       <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Breadcrumb for SEO */}
         <nav className="text-sm text-muted-foreground mb-6">
-          <a href={`/${lang}`} className="hover:text-primary">Home</a>
+          <a href={`/${params.lang}`} className="hover:text-primary">Home</a>
           {' / '}
-          <a href={`/${lang}/blog`} className="hover:text-primary">Blog</a>
+          <a href={`/${params.lang}/blog`} className="hover:text-primary">Blog</a>
           {' / '}
           <span className="text-foreground">{title}</span>
         </nav>
@@ -282,7 +273,7 @@ export default function BlogPostPage() {
           <h3 className="text-2xl font-bold mb-4">Need a Professional Website?</h3>
           <p className="mb-6">Let's build something amazing together. Get in touch for a free consultation!</p>
           <a
-            href={`/${lang}/contact`}
+            href={`/${params.lang}/contact`}
             className="inline-block bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-white/90 transition-colors"
           >
             Contact Us
