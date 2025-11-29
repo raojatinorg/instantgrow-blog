@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { BlogPost } from '@/types';
 import { Card, CardContent, CardFooter } from './ui/card';
-import { Clock } from 'lucide-react';
+import { Clock, Heart, Eye, Flame, Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 interface BlogCardProps {
@@ -43,6 +43,21 @@ export default function BlogCard({ post, lang }: BlogCardProps) {
             </div>
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          {/* Badges */}
+          <div className="absolute top-2 left-2 flex gap-2">
+            {post.trending && (
+              <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-2 py-1 rounded-full flex items-center gap-1 text-xs font-bold animate-pulse">
+                <Flame className="h-3 w-3" />
+                HOT
+              </div>
+            )}
+            {post.featured && (
+              <div className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white px-2 py-1 rounded-full flex items-center gap-1 text-xs font-bold">
+                <Sparkles className="h-3 w-3" />
+                FEATURED
+              </div>
+            )}
+          </div>
           <div className="absolute top-2 right-2 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
             {post.category}
           </div>
@@ -54,12 +69,20 @@ export default function BlogCard({ post, lang }: BlogCardProps) {
           <p className="text-muted-foreground text-sm line-clamp-3 leading-relaxed">
             {post.excerpt[lang] || post.excerpt.en}
           </p>
-          {post.views && post.views > 0 && (
-            <div className="mt-3 text-xs text-muted-foreground flex items-center gap-1">
-              <span>👁️</span>
-              <span>{post.views} views</span>
-            </div>
-          )}
+          <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
+            {post.views && post.views > 0 && (
+              <div className="flex items-center gap-1">
+                <Eye className="h-3 w-3" />
+                <span>{post.views}</span>
+              </div>
+            )}
+            {post.likes && post.likes > 0 && (
+              <div className="flex items-center gap-1">
+                <Heart className="h-3 w-3 fill-red-500 text-red-500" />
+                <span>{post.likes}</span>
+              </div>
+            )}
+          </div>
         </CardContent>
         <CardFooter className="px-6 pb-6 flex items-center justify-between text-xs text-muted-foreground">
           <div className="flex items-center gap-1">

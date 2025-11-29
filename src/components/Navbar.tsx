@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { Button } from './ui/button';
 import { SUPPORTED_LANGUAGES } from '@/types';
 import { t } from '@/lib/translations';
+import DarkModeToggle from './DarkModeToggle';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,7 +33,7 @@ export default function Navbar() {
             </Link>
           </div>
 
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-4">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -44,6 +45,8 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            
+            <DarkModeToggle />
             
             <div className="relative">
               <Button

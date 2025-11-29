@@ -6,14 +6,13 @@ import { db } from '@/lib/firebase';
 import { BlogPost } from '@/types';
 import BlogCard from '@/components/BlogCard';
 import LoadingScreen from '@/components/LoadingScreen';
-import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import AdvancedSearch from '@/components/AdvancedSearch';
 
 export default function BlogPage({ params }: { params: { lang: string } }) {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState<string[]>([]);
 
   useEffect(() => {
     async function fetchPosts() {
@@ -47,6 +46,10 @@ export default function BlogPage({ params }: { params: { lang: string } }) {
         
         setPosts(postsData);
         setFilteredPosts(postsData);
+        
+        // Extract unique categories
+        const uniqueCategories = [...new Set(postsData.map(p => p.category).filter(Boolean))];
+        setCategories(uniqueCategories);
       } catch (error: any) {
         console.error('❌ Blog page error:', error);
         console.error('Error code:', error?.code);
@@ -59,18 +62,34 @@ export default function BlogPage({ params }: { params: { lang: string } }) {
     fetchPosts();
   }, []);
 
-  useEffect(() => {
-    if (searchTerm) {
-      const filtered = posts.filter(post => 
-        post.title[params.lang]?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        post.excerpt[params.lang]?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+  const handleSearch = (filters: any) => {
+    let filtered = [...posts];
+
+    // Search query
+    if (filters.query) {
+      filtered = filtered.filter(post => 
+        post.title[params.lang]?.toLowerCase().includes(filters.query.toLowerCase()) ||
+        post.excerpt[params.lang]?.toLowerCase().includes(filters.query.toLowerCase()) ||
+        post.tags.some(tag => tag.toLowerCase().includes(filters.query.toLowerCase()))
       );
-      setFilteredPosts(filtered);
-    } else {
-      setFilteredPosts(posts);
     }
-  }, [searchTerm, posts, params.lang]);
+
+    // Category filter
+    if (filters.category) {
+      filtered = filtered.filter(post => post.category === filters.category);
+    }
+
+    // Sort
+    if (filters.sortBy === 'popular') {
+      filtered.sort((a, b) => (b.views || 0) - (a.views || 0));
+    } else if (filters.sortBy === 'trending') {
+      filtered = filtered.filter(p => p.trending).concat(filtered.filter(p => !p.trending));
+    } else {
+      filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    }
+
+    setFilteredPosts(filtered);
+  };
 
   if (loading) {
     return <LoadingScreen />;
@@ -85,18 +104,7 @@ export default function BlogPage({ params }: { params: { lang: string } }) {
         </p>
       </div>
 
-      <div className="max-w-xl mx-auto mb-12">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-          <Input
-            type="text"
-            placeholder="Search articles..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-      </div>
+      <AdvancedSearch onSearch={handleSearch} categories={categories} />
 
       {loading ? (
         <div className="text-center py-12">Loading...</div>

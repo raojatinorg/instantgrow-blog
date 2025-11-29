@@ -22,6 +22,8 @@ export interface BlogPost {
   featured: boolean;
   readTime: number;
   views?: number;
+  likes?: number;
+  trending?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -71,4 +73,30 @@ export interface ContactSubmission {
   message: string;
   status: 'new' | 'read' | 'replied';
   createdAt: string;
+}
+
+export interface Comment {
+  id: string;
+  postId: string;
+  name: string;
+  email: string;
+  comment: string;
+  createdAt: string;
+  approved: boolean;
+}
+
+export interface Newsletter {
+  id: string;
+  email: string;
+  subscribedAt: string;
+  active: boolean;
+}
+
+export interface UserActivity {
+  userId: string;
+  postId: string;
+  liked: boolean;
+  bookmarked: boolean;
+  readingHistory: string[];
+  lastVisited: string;
 }

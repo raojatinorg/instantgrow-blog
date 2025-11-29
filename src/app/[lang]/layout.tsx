@@ -1,6 +1,7 @@
 import { SUPPORTED_LANGUAGES } from '@/types';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import NewsletterPopup from '@/components/NewsletterPopup';
 
 export async function generateStaticParams() {
   return SUPPORTED_LANGUAGES.map((lang) => ({
@@ -20,6 +21,7 @@ export default function LangLayout({
       <Navbar />
       <main className="min-h-screen">{children}</main>
       <Footer lang={params.lang} />
+      <NewsletterPopup />
     </>
   );
 }

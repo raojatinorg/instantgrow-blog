@@ -8,6 +8,15 @@ import ViewCounter from '@/components/ViewCounter';
 import CommentsSection from '@/components/CommentsSection';
 import RelatedBlogs from '@/components/RelatedBlogs';
 import ShareButtons from '@/components/ShareButtons';
+import ReadingProgress from '@/components/ReadingProgress';
+import LikeButton from '@/components/LikeButton';
+import BookmarkButton from '@/components/BookmarkButton';
+import ScrollToTop from '@/components/ScrollToTop';
+import TableOfContents from '@/components/TableOfContents';
+import SocialProof from '@/components/SocialProof';
+import PopularPosts from '@/components/PopularPosts';
+import PrintButton from '@/components/PrintButton';
+import FontSizeAdjuster from '@/components/FontSizeAdjuster';
 
 // Enable ISR - Revalidate every 60 seconds
 export const revalidate = 60;
@@ -143,13 +152,33 @@ export default async function BlogPostPage({ params }: { params: { slug: string;
 
   return (
     <>
-      <ViewCounter postId={post.id} />
+      <ReadingProgress />
+      <FontSizeAdjuster />
+      <ViewCounter 
+        postId={post.id} 
+        postData={{
+          slug: post.slug,
+          title: title,
+          coverImage: post.coverImage
+        }}
+      />
+      <ScrollToTop />
+      <SocialProof postId={post.id} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       
-      <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Sidebar - Table of Contents & Popular Posts */}
+          <aside className="hidden lg:block lg:col-span-3 space-y-6">
+            <TableOfContents />
+            <PopularPosts lang={params.lang} />
+          </aside>
+
+          {/* Main Content */}
+          <article className="lg:col-span-9">
         {/* Breadcrumb for SEO */}
         <nav className="text-sm text-muted-foreground mb-6">
           <a href={`/${params.lang}`} className="hover:text-primary">Home</a>
@@ -238,8 +267,13 @@ export default async function BlogPostPage({ params }: { params: { slug: string;
           dangerouslySetInnerHTML={{ __html: content }}
         />
 
-        {/* Share Buttons */}
+        {/* Engagement Buttons */}
         <div className="mt-12 pt-8 border-t">
+          <div className="flex flex-wrap gap-4 mb-6">
+            <LikeButton postId={post.id} />
+            <BookmarkButton postId={post.id} title={title} />
+            <PrintButton />
+          </div>
           <ShareButtons title={title} url={`https://instantgrow.shop/${params.lang}/blog/${params.slug}`} />
         </div>
 
@@ -296,6 +330,8 @@ export default async function BlogPostPage({ params }: { params: { slug: string;
         {/* Comments Section */}
         <CommentsSection postId={post.id} />
       </article>
+      </div>
+      </div>
     </>
   );
 }

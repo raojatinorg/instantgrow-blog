@@ -10,6 +10,7 @@ import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Star, Flame, ArrowRight } from 'lucide-react';
 import { t } from '@/lib/translations';
+import ReadingHistory from '@/components/ReadingHistory';
 
 export default function HomePage({ params }: { params: { lang: string } }) {
   const [featured, setFeatured] = useState<BlogPost[]>([]);
@@ -62,6 +63,8 @@ export default function HomePage({ params }: { params: { lang: string } }) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <ReadingHistory lang={params.lang} />
+      
       <section className="text-center mb-20 gradient-bg py-20 rounded-2xl relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-transparent" />
         <div className="relative z-10">
