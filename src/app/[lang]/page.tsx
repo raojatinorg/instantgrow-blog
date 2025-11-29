@@ -8,6 +8,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { Star, Flame, ArrowRight } from 'lucide-react';
+import { t } from '@/lib/translations';
 
 export default function HomePage({ params }: { params: { lang: string } }) {
   const [featured, setFeatured] = useState<BlogPost[]>([]);
@@ -64,14 +66,14 @@ export default function HomePage({ params }: { params: { lang: string } }) {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-transparent" />
         <div className="relative z-10">
           <h1 className="text-5xl md:text-7xl font-playfair font-bold mb-6 text-foreground animate-fade-in">
-            Grow Your Business<br />with Premium Websites
+            {t(params.lang, 'heroTitle')}<br />{t(params.lang, 'heroSubtitle')}
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed">
-            Expert insights on website development, SEO strategies, and building a powerful digital presence.
+            {t(params.lang, 'heroDescription')}
           </p>
           <Link href={`/${params.lang}/blog`}>
             <Button size="lg" className="bg-primary hover:bg-primary/90 hover:scale-105 transition-transform shadow-lg">
-              Explore Articles →
+              {t(params.lang, 'exploreArticles')} <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
         </div>
@@ -80,8 +82,8 @@ export default function HomePage({ params }: { params: { lang: string } }) {
       {featured.length > 0 && (
         <section className="mb-20">
           <div className="flex items-center gap-3 mb-8">
-            <span className="text-4xl">⭐</span>
-            <h2 className="text-3xl font-playfair font-bold">Featured Articles</h2>
+            <Star className="h-10 w-10 text-yellow-500 fill-yellow-500" />
+            <h2 className="text-3xl font-playfair font-bold">{t(params.lang, 'featuredArticles')}</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {featured.map((post) => (
@@ -94,24 +96,24 @@ export default function HomePage({ params }: { params: { lang: string } }) {
       <section>
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center gap-3">
-            <span className="text-4xl">🔥</span>
-            <h2 className="text-3xl font-playfair font-bold">Latest Articles</h2>
+            <Flame className="h-10 w-10 text-orange-500" />
+            <h2 className="text-3xl font-playfair font-bold">{t(params.lang, 'latestArticles')}</h2>
           </div>
           {latest.length > 0 && (
             <Link href={`/${params.lang}/blog`}>
               <Button variant="outline" className="hover:bg-primary hover:text-primary-foreground transition-colors">
-                View All →
+                {t(params.lang, 'viewAll')} <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
           )}
         </div>
         {loading ? (
           <div className="text-center py-12 text-muted-foreground">
-            <p className="text-lg mb-4">Loading...</p>
+            <p className="text-lg mb-4">{t(params.lang, 'loading')}</p>
           </div>
         ) : latest.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
-            <p className="text-lg mb-4">No posts yet. Check back soon for amazing content!</p>
+            <p className="text-lg mb-4">{t(params.lang, 'noPosts')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -123,12 +125,12 @@ export default function HomePage({ params }: { params: { lang: string } }) {
       </section>
 
       <section className="mt-20 bg-muted rounded-2xl p-12 text-center border border-border">
-        <h2 className="text-3xl font-playfair font-bold mb-4 text-foreground">Ready to Transform Your Business?</h2>
+        <h2 className="text-3xl font-playfair font-bold mb-4 text-foreground">{t(params.lang, 'transformBusiness')}</h2>
         <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-          Subscribe to our newsletter for weekly insights on website development, SEO, and digital growth.
+          {t(params.lang, 'newsletterText')}
         </p>
         <Link href={`/${params.lang}/contact`}>
-          <Button size="lg" className="bg-secondary hover:bg-secondary/90">Get Started</Button>
+          <Button size="lg" className="bg-secondary hover:bg-secondary/90">{t(params.lang, 'getStarted')}</Button>
         </Link>
       </section>
     </div>

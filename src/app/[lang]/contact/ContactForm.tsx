@@ -6,9 +6,14 @@ import { db } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Mail, MapPin } from 'lucide-react';
+import { Mail, MapPin, CheckCircle } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { t } from '@/lib/translations';
 
 export default function ContactForm() {
+  const pathname = usePathname();
+  const lang = pathname.split('/')[1] || 'en';
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -40,26 +45,27 @@ export default function ContactForm() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-5xl font-playfair font-bold mb-4 text-center text-foreground">Contact Us</h1>
-      <p className="text-center text-muted-foreground mb-12 text-lg">Have a project in mind? Let's build something amazing together!</p>
+      <h1 className="text-5xl font-playfair font-bold mb-4 text-center text-foreground">{t(lang, 'contactUs')}</h1>
+      <p className="text-center text-muted-foreground mb-12 text-lg">{t(lang, 'contactSubtitle')}</p>
       
       <div className="grid md:grid-cols-2 gap-8">
         <div>
           <Card className="border shadow-lg h-full">
             <CardHeader className="bg-primary text-primary-foreground">
-              <CardTitle>Send us a Message</CardTitle>
+              <CardTitle>{t(lang, 'sendMessage')}</CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
               {submitted && (
-                <div className="mb-6 p-4 bg-secondary/10 border border-secondary rounded-lg text-secondary">
-                  ✓ Thank you! Your message has been sent successfully. We'll get back to you soon.
+                <div className="mb-6 p-4 bg-secondary/10 border border-secondary rounded-lg text-secondary flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5" />
+                  {t(lang, 'thankYou')}
                 </div>
               )}
               
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium mb-2">
-                    Your Name *
+                    {t(lang, 'yourName')} *
                   </label>
                   <Input
                     id="name"
@@ -73,7 +79,7 @@ export default function ContactForm() {
 
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium mb-2">
-                    Email Address *
+                    {t(lang, 'emailAddress')} *
                   </label>
                   <Input
                     id="email"
@@ -87,7 +93,7 @@ export default function ContactForm() {
 
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium mb-2">
-                    Your Message *
+                    {t(lang, 'yourMessage')} *
                   </label>
                   <textarea
                     id="message"
@@ -101,7 +107,7 @@ export default function ContactForm() {
                 </div>
 
                 <Button type="submit" size="lg" className="w-full bg-secondary hover:bg-secondary/90" disabled={loading}>
-                  {loading ? 'Sending...' : submitted ? '✓ Message Sent!' : 'Send Message'}
+                  {loading ? t(lang, 'sending') : submitted ? `✓ ${t(lang, 'messageSent')}` : t(lang, 'sendMessageBtn')}
                 </Button>
               </form>
             </CardContent>
@@ -111,13 +117,13 @@ export default function ContactForm() {
         <div className="space-y-6">
           <Card className="border shadow-lg">
             <CardHeader className="bg-secondary text-secondary-foreground">
-              <CardTitle>Contact Information</CardTitle>
+              <CardTitle>{t(lang, 'contactInfo')}</CardTitle>
             </CardHeader>
             <CardContent className="pt-6 space-y-6">
               <div className="flex items-start gap-4">
                 <Mail className="h-6 w-6 text-primary mt-1" />
                 <div>
-                  <h3 className="font-semibold mb-1">Email</h3>
+                  <h3 className="font-semibold mb-1">{t(lang, 'email')}</h3>
                   <a href="mailto:info.raojatin@gmail.com" className="text-muted-foreground hover:text-primary">
                     info.raojatin@gmail.com
                   </a>
@@ -127,10 +133,9 @@ export default function ContactForm() {
               <div className="flex items-start gap-4">
                 <MapPin className="h-6 w-6 text-primary mt-1" />
                 <div>
-                  <h3 className="font-semibold mb-1">Location</h3>
+                  <h3 className="font-semibold mb-1">{t(lang, 'location')}</h3>
                   <p className="text-muted-foreground">
-                    Rewari, Haryana 123401<br />
-                    India
+                    {t(lang, 'locationText')}
                   </p>
                 </div>
               </div>
@@ -139,25 +144,25 @@ export default function ContactForm() {
 
           <Card className="border shadow-lg">
             <CardHeader className="bg-muted">
-              <CardTitle>Why Work With Us?</CardTitle>
+              <CardTitle>{t(lang, 'whyWorkWithUs')}</CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
               <ul className="space-y-3">
                 <li className="flex items-start gap-2">
-                  <span className="text-primary font-bold">✓</span>
-                  <span>Professional website development tailored to your business</span>
+                  <CheckCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span>{t(lang, 'reason1')}</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-primary font-bold">✓</span>
-                  <span>SEO-optimized solutions for maximum visibility</span>
+                  <CheckCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span>{t(lang, 'reason2')}</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-primary font-bold">✓</span>
-                  <span>Fast turnaround time with quality assurance</span>
+                  <CheckCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span>{t(lang, 'reason3')}</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-primary font-bold">✓</span>
-                  <span>Ongoing support and maintenance</span>
+                  <CheckCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span>{t(lang, 'reason4')}</span>
                 </li>
               </ul>
             </CardContent>

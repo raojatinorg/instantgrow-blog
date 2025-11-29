@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Globe } from 'lucide-react';
+import { Menu, X, Globe, Rocket } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { SUPPORTED_LANGUAGES } from '@/types';
+import { t } from '@/lib/translations';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,10 +15,10 @@ export default function Navbar() {
   const currentLang = pathname.split('/')[1] || 'en';
 
   const navLinks = [
-    { href: `/${currentLang}`, label: 'Home' },
-    { href: `/${currentLang}/blog`, label: 'Blog' },
-    { href: `/${currentLang}/about`, label: 'About' },
-    { href: `/${currentLang}/contact`, label: 'Contact' },
+    { href: `/${currentLang}`, label: t(currentLang, 'home') },
+    { href: `/${currentLang}/blog`, label: t(currentLang, 'blog') },
+    { href: `/${currentLang}/about`, label: t(currentLang, 'about') },
+    { href: `/${currentLang}/contact`, label: t(currentLang, 'contact') },
   ];
 
   return (
@@ -26,7 +27,7 @@ export default function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href={`/${currentLang}`} className="flex items-center gap-2 text-2xl font-playfair font-bold text-foreground hover:text-primary transition-colors">
-              <span className="text-3xl">🚀</span>
+              <Rocket className="h-8 w-8 text-primary" />
               <span>InstantGrow<span className="text-primary">.shop</span></span>
             </Link>
           </div>
