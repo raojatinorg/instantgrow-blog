@@ -76,64 +76,62 @@ export default function CommentsSection({ postId }: { postId: string }) {
   };
 
   return (
-    <div className=\"mt-12 border-t pt-12\">
-      <h3 className=\"text-2xl font-bold mb-6 flex items-center gap-2\">
-        <MessageSquare className=\"h-6 w-6\" />
+    <div className="mt-12 border-t pt-12">
+      <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+        <MessageSquare className="h-6 w-6" />
         Comments ({comments.length})
       </h3>
 
-      {/* Comment Form */}
-      <form onSubmit={handleSubmit} className=\"mb-8 p-6 bg-muted rounded-lg\">
-        <h4 className=\"font-bold mb-4\">Leave a Comment</h4>
-        <div className=\"grid md:grid-cols-2 gap-4 mb-4\">
+      <form onSubmit={handleSubmit} className="mb-8 p-6 bg-muted rounded-lg">
+        <h4 className="font-bold mb-4">Leave a Comment</h4>
+        <div className="grid md:grid-cols-2 gap-4 mb-4">
           <Input
-            placeholder=\"Your Name\"
+            placeholder="Your Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
           />
           <Input
-            type=\"email\"
-            placeholder=\"Your Email\"
+            type="email"
+            placeholder="Your Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
         <textarea
-          placeholder=\"Your Comment...\"
+          placeholder="Your Comment..."
           value={comment}
           onChange={(e) => setComment(e.target.value)}
-          className=\"w-full p-3 border rounded-lg mb-4 min-h-[100px]\"
+          className="w-full p-3 border rounded-lg mb-4 min-h-[100px]"
           required
         />
-        <Button type=\"submit\" disabled={loading}>
-          <Send className=\"h-4 w-4 mr-2\" />
+        <Button type="submit" disabled={loading}>
+          <Send className="h-4 w-4 mr-2" />
           {loading ? 'Posting...' : 'Post Comment'}
         </Button>
       </form>
 
-      {/* Comments List */}
-      <div className=\"space-y-4\">
+      <div className="space-y-4">
         {comments.length === 0 ? (
-          <p className=\"text-muted-foreground text-center py-8\">
+          <p className="text-muted-foreground text-center py-8">
             No comments yet. Be the first to comment!
           </p>
         ) : (
           comments.map((c) => (
-            <div key={c.id} className=\"p-4 bg-muted rounded-lg\">
-              <div className=\"flex items-center gap-2 mb-2\">
-                <div className=\"w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold\">
+            <div key={c.id} className="p-4 bg-muted rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">
                   {c.name.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <p className=\"font-bold\">{c.name}</p>
-                  <p className=\"text-xs text-muted-foreground\">
+                  <p className="font-bold">{c.name}</p>
+                  <p className="text-xs text-muted-foreground">
                     {new Date(c.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               </div>
-              <p className=\"text-sm\">{c.comment}</p>
+              <p className="text-sm">{c.comment}</p>
             </div>
           ))
         )}
