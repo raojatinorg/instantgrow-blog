@@ -25,8 +25,9 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <Link href={`/${currentLang}`} className="text-2xl font-playfair font-bold text-foreground hover:text-primary transition-colors">
-              Premium Blog
+            <Link href={`/${currentLang}`} className="flex items-center gap-2 text-2xl font-playfair font-bold text-foreground hover:text-primary transition-colors">
+              <span className="text-3xl">🚀</span>
+              <span>InstantGrow<span className="text-primary">.shop</span></span>
             </Link>
           </div>
 

@@ -240,7 +240,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string;
 
         {/* Share Buttons */}
         <div className="mt-12 pt-8 border-t">
-          <ShareButtons title={title} url={`https://instantgrow-blog-pdx8.vercel.app/${params.lang}/blog/${params.slug}`} />
+          <ShareButtons title={title} url={`https://instantgrow.shop/${params.lang}/blog/${params.slug}`} />
         </div>
 
         {/* Tags */}

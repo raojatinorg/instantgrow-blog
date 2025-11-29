@@ -1,5 +1,26 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Code, Rocket, Target, Users } from 'lucide-react';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'About Us - InstantGrow.shop | Professional Web Development & SEO Services',
+  description: 'Learn about InstantGrow.shop and founder Rao Jatin. Professional freelance web developer offering custom website development, SEO optimization, and digital marketing services in Rewari, Haryana.',
+  keywords: 'about instantgrow, rao jatin, web developer rewari, freelance web developer india, seo services haryana',
+  openGraph: {
+    title: 'About InstantGrow.shop - Professional Web Development Services',
+    description: 'Meet Rao Jatin, founder of InstantGrow.shop. Expert in web development, SEO, and digital marketing.',
+    type: 'website',
+    url: 'https://instantgrow.shop/en/about',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'About InstantGrow.shop',
+    description: 'Professional web development and SEO services by Rao Jatin',
+  },
+  alternates: {
+    canonical: 'https://instantgrow.shop/en/about',
+  },
+};
 
 export default function AboutPage() {
   return (

@@ -6,9 +6,12 @@ export default function Footer({ lang = 'en' }: { lang?: string }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
-            <h3 className="text-2xl font-playfair font-bold mb-4 text-foreground">Premium Blog</h3>
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-3xl">🚀</span>
+              <h3 className="text-2xl font-playfair font-bold text-foreground">InstantGrow<span className="text-primary">.shop</span></h3>
+            </div>
             <p className="text-muted-foreground mb-4">
-              Your trusted source for website development, SEO, and digital growth strategies.
+              Your trusted source for website development, SEO, and digital growth strategies. Professional web development services by Rao Jatin.
             </p>
           </div>
 
@@ -35,7 +38,7 @@ export default function Footer({ lang = 'en' }: { lang?: string }) {
         </div>
 
         <div className="border-t mt-8 pt-8 text-center text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Premium Blog. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} InstantGrow.shop - All rights reserved. | Developed by <a href="mailto:info.raojatin@gmail.com" className="text-primary hover:underline">Rao Jatin</a></p>
         </div>
       </div>
     </footer>

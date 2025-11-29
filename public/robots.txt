@@ -1,5 +1,14 @@
+# InstantGrow.shop Robots.txt
 User-agent: *
 Allow: /
 Disallow: /admin/
+Disallow: /api/
 
-Sitemap: https://yourdomain.com/sitemap.xml
+# Googlebot
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://instantgrow.shop/sitemap.xml

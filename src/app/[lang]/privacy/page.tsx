@@ -1,4 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy - InstantGrow.shop | Data Protection & User Privacy',
+  description: 'Read InstantGrow.shop privacy policy. Learn how we collect, use, and protect your personal information. GDPR compliant. Contact: info.raojatin@gmail.com',
+  keywords: 'privacy policy, data protection, gdpr compliance, user privacy, cookie policy',
+  robots: 'index, follow',
+  alternates: {
+    canonical: 'https://instantgrow.shop/en/privacy',
+  },
+};
 
 export default function PrivacyPage() {
   return (
