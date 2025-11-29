@@ -6,8 +6,13 @@ import Image from 'next/image';
 import { Clock, Calendar, User, Eye } from 'lucide-react';
 import { collection, query, where, getDocs, doc, updateDoc, increment } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { useParams, useRouter } from 'next/navigation';
 
-export default function BlogPostPage({ params }: { params: { slug: string; lang: string } }) {
+export default function BlogPostPage() {
+  const params = useParams();
+  const router = useRouter();
+  const slug = params.slug as string;
+  const lang = params.lang as string;
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -15,12 +20,12 @@ export default function BlogPostPage({ params }: { params: { slug: string; lang:
   useEffect(() => {
     async function fetchPost() {
       try {
-        console.log('🔍 Searching for slug:', params.slug);
+        console.log('🔍 Searching for slug:', slug);
         
         // Method 1: Try with slug + published
         let q = query(
           collection(db, 'posts'),
-          where('slug', '==', params.slug)
+          where('slug', '==', slug)
         );
         let snapshot = await getDocs(q);
         
@@ -38,7 +43,7 @@ export default function BlogPostPage({ params }: { params: { slug: string; lang:
             where('published', '==', true)
           );
           snapshot = await getDocs(q);
-          publishedPosts = snapshot.docs.filter(doc => doc.data().slug === params.slug);
+          publishedPosts = snapshot.docs.filter(doc => doc.data().slug === slug);
           console.log('📄 Fallback found:', publishedPosts.length);
         }
         
@@ -77,7 +82,7 @@ export default function BlogPostPage({ params }: { params: { slug: string; lang:
       }
     }
     fetchPost();
-  }, [params.slug]);
+  }, [slug]);
 
   if (loading) {
     return (
@@ -92,23 +97,23 @@ export default function BlogPostPage({ params }: { params: { slug: string; lang:
 
   if (notFound || !post) {
     console.error('❌ POST NOT FOUND - Redirecting would happen here');
-    console.error('Slug searched:', params.slug);
-    console.error('Language:', params.lang);
+    console.error('Slug searched:', slug);
+    console.error('Language:', lang);
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">404 - Post Not Found</h1>
-          <p className="text-muted-foreground mb-6">Slug: {params.slug}</p>
+          <p className="text-muted-foreground mb-6">Slug: {slug}</p>
           <p className="text-sm text-muted-foreground mb-6">The blog post you're looking for doesn't exist or is not published.</p>
-          <a href={`/${params.lang}/blog`} className="text-primary hover:underline">← Back to Blog</a>
+          <a href={`/${lang}/blog`} className="text-primary hover:underline">← Back to Blog</a>
         </div>
       </div>
     );
   }
 
-  const title = post.title[params.lang] || post.title.en;
-  const excerpt = post.excerpt[params.lang] || post.excerpt.en;
-  const content = post.content[params.lang] || post.content.en;
+  const title = post.title[lang] || post.title.en;
+  const excerpt = post.excerpt[lang] || post.excerpt.en;
+  const content = post.content[lang] || post.content.en;
 
   // JSON-LD Schema for SEO
   const jsonLd = {
@@ -134,7 +139,7 @@ export default function BlogPostPage({ params }: { params: { slug: string; lang:
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://instantgrow.shop/${params.lang}/blog/${params.slug}`,
+      '@id': `https://instantgrow.shop/${lang}/blog/${slug}`,
     },
     keywords: post.seo?.keywords?.join(', '),
     articleSection: post.category,
@@ -151,9 +156,9 @@ export default function BlogPostPage({ params }: { params: { slug: string; lang:
       <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Breadcrumb for SEO */}
         <nav className="text-sm text-muted-foreground mb-6">
-          <a href={`/${params.lang}`} className="hover:text-primary">Home</a>
+          <a href={`/${lang}`} className="hover:text-primary">Home</a>
           {' / '}
-          <a href={`/${params.lang}/blog`} className="hover:text-primary">Blog</a>
+          <a href={`/${lang}/blog`} className="hover:text-primary">Blog</a>
           {' / '}
           <span className="text-foreground">{title}</span>
         </nav>
@@ -168,7 +173,7 @@ export default function BlogPostPage({ params }: { params: { slug: string; lang:
         )}
 
         {/* Title */}
-        <h1 className="text-4xl md:text-5xl font-playfair font-bold mb-6 text-foreground leading-tight">
+        <h1 className="text-4xl md:text-5xl font-playfair font-bold mb-6 text-foreground leading-tight hover:text-primary transition-colors">
           {title}
         </h1>
 
@@ -200,15 +205,16 @@ export default function BlogPostPage({ params }: { params: { slug: string; lang:
 
         {/* Cover Image */}
         {post.coverImage && (
-          <div className="relative w-full h-[400px] mb-12 rounded-lg overflow-hidden bg-muted">
+          <div className="relative w-full h-[400px] mb-12 rounded-lg overflow-hidden bg-muted shadow-2xl group">
             <Image
               src={post.coverImage}
               alt={title}
               fill
-              className="object-cover"
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
               priority
               unoptimized
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
         )}
 
@@ -276,7 +282,7 @@ export default function BlogPostPage({ params }: { params: { slug: string; lang:
           <h3 className="text-2xl font-bold mb-4">Need a Professional Website?</h3>
           <p className="mb-6">Let's build something amazing together. Get in touch for a free consultation!</p>
           <a
-            href={`/${params.lang}/contact`}
+            href={`/${lang}/contact`}
             className="inline-block bg-white text-primary px-8 py-3 rounded-lg font-semibold hover:bg-white/90 transition-colors"
           >
             Contact Us

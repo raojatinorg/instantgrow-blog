@@ -244,6 +244,19 @@ export default function PremiumAdminDashboard() {
         setLoading(false);
         return;
       }
+      
+      // Validate required fields
+      if (!currentPost.title?.en || currentPost.title.en.trim() === '') {
+        alert('❌ Title is required!');
+        setLoading(false);
+        return;
+      }
+      
+      if (!currentPost.content?.en || currentPost.content.en.trim() === '') {
+        alert('❌ Content is required!');
+        setLoading(false);
+        return;
+      }
 
       // Ensure all required fields are present
       const postData = {
@@ -273,22 +286,34 @@ export default function PremiumAdminDashboard() {
 
       if (currentPost.id) {
         await updateDoc(doc(db, 'posts', currentPost.id), postData);
-        alert('✅ Post updated successfully!');
+        console.log('✅ Post updated in Firestore:', currentPost.id);
+        alert('✅ Post updated successfully!\n\nSlug: ' + slug + '\nPublished: ' + (postData.published ? 'Yes' : 'No'));
         setIsEditing(false);
         setCurrentPost(null);
         setImageFile(null);
         await fetchPosts();
       } else {
-        await addDoc(collection(db, 'posts'), {
+        const docRef = await addDoc(collection(db, 'posts'), {
           ...postData,
           views: 0,
           createdAt: new Date().toISOString(),
         });
         
+        console.log('✅ New post created in Firestore:', docRef.id);
+        console.log('🔗 Post URL:', `/en/blog/${slug}`);
+        
         if (postData.published) {
+          const message = `✅ Blog Post Published Successfully!\n\n` +
+            `Title: ${postData.title.en}\n` +
+            `Slug: ${slug}\n` +
+            `URL: /en/blog/${slug}\n\n` +
+            `✅ Post is now live on your website!`;
+          alert(message);
+          
+          // Redirect to success page
           window.location.href = `/en/admin/success?slug=${slug}&title=${encodeURIComponent(postData.title.en)}`;
         } else {
-          alert('✅ Post saved as draft!');
+          alert('✅ Post saved as draft!\n\nSlug: ' + slug + '\n\nPublish it later from the posts list.');
           setIsEditing(false);
           setCurrentPost(null);
           setImageFile(null);

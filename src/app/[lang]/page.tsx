@@ -55,21 +55,29 @@ export default function HomePage({ params }: { params: { lang: string } }) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <section className="text-center mb-20 gradient-bg py-20 rounded-2xl">
-        <h1 className="text-5xl md:text-7xl font-playfair font-bold mb-6 text-foreground">
-          Grow Your Business<br />with Premium Websites
-        </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-          Expert insights on website development, SEO strategies, and building a powerful digital presence.
-        </p>
-        <Link href={`/${params.lang}/blog`}>
-          <Button size="lg" className="bg-primary hover:bg-primary/90">Explore Articles</Button>
-        </Link>
+      <section className="text-center mb-20 gradient-bg py-20 rounded-2xl relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-transparent" />
+        <div className="relative z-10">
+          <h1 className="text-5xl md:text-7xl font-playfair font-bold mb-6 text-foreground animate-fade-in">
+            Grow Your Business<br />with Premium Websites
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed">
+            Expert insights on website development, SEO strategies, and building a powerful digital presence.
+          </p>
+          <Link href={`/${params.lang}/blog`}>
+            <Button size="lg" className="bg-primary hover:bg-primary/90 hover:scale-105 transition-transform shadow-lg">
+              Explore Articles →
+            </Button>
+          </Link>
+        </div>
       </section>
 
       {featured.length > 0 && (
         <section className="mb-20">
-          <h2 className="text-3xl font-playfair font-bold mb-8">Featured Articles</h2>
+          <div className="flex items-center gap-3 mb-8">
+            <span className="text-4xl">⭐</span>
+            <h2 className="text-3xl font-playfair font-bold">Featured Articles</h2>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {featured.map((post) => (
               <BlogCard key={post.id} post={post} lang={params.lang} />
@@ -80,10 +88,15 @@ export default function HomePage({ params }: { params: { lang: string } }) {
 
       <section>
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-playfair font-bold">Latest Articles</h2>
+          <div className="flex items-center gap-3">
+            <span className="text-4xl">🔥</span>
+            <h2 className="text-3xl font-playfair font-bold">Latest Articles</h2>
+          </div>
           {latest.length > 0 && (
             <Link href={`/${params.lang}/blog`}>
-              <Button variant="outline">View All</Button>
+              <Button variant="outline" className="hover:bg-primary hover:text-primary-foreground transition-colors">
+                View All →
+              </Button>
             </Link>
           )}
         </div>
