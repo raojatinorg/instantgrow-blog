@@ -23,54 +23,54 @@ export default function ShareButtons({ title, url }: { title: string; url: strin
   };
 
   return (
-    <div className=\"flex flex-wrap gap-2 items-center\">
-      <span className=\"text-sm font-semibold flex items-center gap-2\">
-        <Share2 className=\"h-4 w-4\" />
+    <div className="flex flex-wrap gap-2 items-center">
+      <span className="text-sm font-semibold flex items-center gap-2">
+        <Share2 className="h-4 w-4" />
         Share:
       </span>
       
       <Button
-        size=\"sm\"
-        variant=\"outline\"
+        size="sm"
+        variant="outline"
         onClick={() => window.open(shareLinks.twitter, '_blank')}
-        className=\"bg-[#1DA1F2] text-white hover:bg-[#1DA1F2]/90 border-0\"
+        className="bg-[#1DA1F2] text-white hover:bg-[#1DA1F2]/90 border-0"
       >
         Twitter
       </Button>
 
       <Button
-        size=\"sm\"
-        variant=\"outline\"
+        size="sm"
+        variant="outline"
         onClick={() => window.open(shareLinks.linkedin, '_blank')}
-        className=\"bg-[#0A66C2] text-white hover:bg-[#0A66C2]/90 border-0\"
+        className="bg-[#0A66C2] text-white hover:bg-[#0A66C2]/90 border-0"
       >
         LinkedIn
       </Button>
 
       <Button
-        size=\"sm\"
-        variant=\"outline\"
+        size="sm"
+        variant="outline"
         onClick={() => window.open(shareLinks.facebook, '_blank')}
-        className=\"bg-[#1877F2] text-white hover:bg-[#1877F2]/90 border-0\"
+        className="bg-[#1877F2] text-white hover:bg-[#1877F2]/90 border-0"
       >
         Facebook
       </Button>
 
       <Button
-        size=\"sm\"
-        variant=\"outline\"
+        size="sm"
+        variant="outline"
         onClick={() => window.open(shareLinks.whatsapp, '_blank')}
-        className=\"bg-[#25D366] text-white hover:bg-[#25D366]/90 border-0\"
+        className="bg-[#25D366] text-white hover:bg-[#25D366]/90 border-0"
       >
         WhatsApp
       </Button>
 
       <Button
-        size=\"sm\"
-        variant=\"outline\"
+        size="sm"
+        variant="outline"
         onClick={copyToClipboard}
       >
-        {copied ? <Check className=\"h-4 w-4 mr-1\" /> : <Copy className=\"h-4 w-4 mr-1\" />}
+        {copied ? <Check className="h-4 w-4 mr-1" /> : <Copy className="h-4 w-4 mr-1" />}
         {copied ? 'Copied!' : 'Copy Link'}
       </Button>
     </div>

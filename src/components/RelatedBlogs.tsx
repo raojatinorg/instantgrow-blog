@@ -37,12 +37,12 @@ export default function RelatedBlogs({ currentPostId, category, lang }: { curren
   if (relatedPosts.length === 0) return null;
 
   return (
-    <div className=\"mt-12 border-t pt-12\">
-      <h3 className=\"text-2xl font-bold mb-6 flex items-center gap-2\">
-        <Sparkles className=\"h-6 w-6 text-primary\" />
+    <div className="mt-12 border-t pt-12">
+      <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+        <Sparkles className="h-6 w-6 text-primary" />
         More Articles You'll Love
       </h3>
-      <div className=\"grid md:grid-cols-3 gap-6\">
+      <div className="grid md:grid-cols-3 gap-6">
         {relatedPosts.map((post) => (
           <BlogCard key={post.id} post={post} lang={lang} />
         ))}
