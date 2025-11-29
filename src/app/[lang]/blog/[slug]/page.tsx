@@ -4,6 +4,10 @@ import { Clock, Calendar, User, Eye } from 'lucide-react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Metadata } from 'next';
+import ViewCounter from '@/components/ViewCounter';
+import CommentsSection from '@/components/CommentsSection';
+import RelatedBlogs from '@/components/RelatedBlogs';
+import ShareButtons from '@/components/ShareButtons';
 
 // Enable ISR - Revalidate every 60 seconds
 export const revalidate = 60;
@@ -139,6 +143,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string;
 
   return (
     <>
+      <ViewCounter postId={post.id} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -233,9 +238,14 @@ export default async function BlogPostPage({ params }: { params: { slug: string;
           dangerouslySetInnerHTML={{ __html: content }}
         />
 
+        {/* Share Buttons */}
+        <div className="mt-12 pt-8 border-t">
+          <ShareButtons title={title} url={`https://instantgrow-blog-pdx8.vercel.app/${params.lang}/blog/${params.slug}`} />
+        </div>
+
         {/* Tags */}
         {post.tags && post.tags.length > 0 && (
-          <div className="mt-12 pt-8 border-t">
+          <div className="mt-8">
             <h3 className="text-sm font-semibold text-muted-foreground mb-4">Tags:</h3>
             <div className="flex flex-wrap gap-2">
               {post.tags.map((tag) => (
@@ -279,6 +289,12 @@ export default async function BlogPostPage({ params }: { params: { slug: string;
             Contact Us
           </a>
         </div>
+
+        {/* Related Blogs */}
+        <RelatedBlogs currentPostId={post.id} category={post.category} lang={params.lang} />
+
+        {/* Comments Section */}
+        <CommentsSection postId={post.id} />
       </article>
     </>
   );
