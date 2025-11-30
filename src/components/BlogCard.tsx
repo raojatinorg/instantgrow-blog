@@ -28,7 +28,7 @@ export default function BlogCard({ post, lang }: BlogCardProps) {
       onClick={handleClick}
       className="overflow-hidden hover:shadow-2xl transition-all duration-300 h-full border hover:border-primary hover:scale-[1.02] cursor-pointer group"
     >
-        <div className="relative h-48 w-full bg-muted overflow-hidden">
+        <div className="relative w-full bg-muted overflow-hidden" style={{ aspectRatio: '16/9' }}>
           {post.coverImage ? (
             <Image
               src={post.coverImage}

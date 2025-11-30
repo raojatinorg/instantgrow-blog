@@ -21,7 +21,7 @@ export default function SocialProof({ postId }: { postId: string }) {
   }, [postId]);
 
   return (
-    <div className="fixed bottom-8 left-8 bg-primary text-primary-foreground px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-pulse z-40">
+    <div className="hidden md:flex fixed bottom-8 left-8 bg-primary text-primary-foreground px-4 py-2 rounded-full shadow-lg items-center gap-2 animate-pulse z-40">
       <Users className="h-4 w-4" />
       <span className="text-sm font-semibold">
         {readers} {readers === 1 ? 'person' : 'people'} reading

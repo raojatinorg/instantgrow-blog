@@ -47,7 +47,7 @@ export default function FontSizeAdjuster() {
   };
 
   return (
-    <div className="fixed right-8 top-1/2 -translate-y-1/2 bg-background border rounded-lg shadow-lg p-2 space-y-2 z-40">
+    <div className="hidden md:block fixed right-8 top-1/2 -translate-y-1/2 bg-background border rounded-lg shadow-lg p-2 space-y-2 z-40">
       <button
         onClick={increase}
         disabled={fontSize >= 150}

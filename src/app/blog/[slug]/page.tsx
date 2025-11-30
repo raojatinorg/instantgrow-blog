@@ -217,7 +217,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         </div>
 
         {post.coverImage && (
-          <div className="relative w-full h-[400px] mb-12 rounded-lg overflow-hidden bg-muted shadow-2xl group">
+          <div className="relative w-full mb-12 rounded-lg overflow-hidden bg-muted shadow-2xl group" style={{ aspectRatio: '16/9' }}>
             <Image
               src={post.coverImage}
               alt={title}
