@@ -2,24 +2,19 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Globe, Rocket } from 'lucide-react';
+import { Menu, X, Rocket } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from './ui/button';
-import { SUPPORTED_LANGUAGES } from '@/types';
-import { t } from '@/lib/translations';
 import DarkModeToggle from './DarkModeToggle';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [langOpen, setLangOpen] = useState(false);
   const pathname = usePathname();
-  const currentLang = pathname.split('/')[1] || 'en';
 
   const navLinks = [
-    { href: `/${currentLang}`, label: t(currentLang, 'home') },
-    { href: `/${currentLang}/blog`, label: t(currentLang, 'blog') },
-    { href: `/${currentLang}/about`, label: t(currentLang, 'about') },
-    { href: `/${currentLang}/contact`, label: t(currentLang, 'contact') },
+    { href: '/', label: 'Home' },
+    { href: '/blog', label: 'Blog' },
+    { href: '/about', label: 'About' },
+    { href: '/contact', label: 'Contact' },
   ];
 
   return (
@@ -27,7 +22,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <Link href={`/${currentLang}`} className="flex items-center gap-2 text-2xl font-playfair font-bold text-foreground hover:text-primary transition-colors">
+            <Link href="/" className="flex items-center gap-2 text-2xl font-playfair font-bold text-foreground hover:text-primary transition-colors">
               <Rocket className="h-8 w-8 text-primary" />
               <span>InstantGrow<span className="text-primary">.shop</span></span>
             </Link>
@@ -47,33 +42,6 @@ export default function Navbar() {
             ))}
             
             <DarkModeToggle />
-            
-            <div className="relative">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setLangOpen(!langOpen)}
-                className="flex items-center gap-2"
-              >
-                <Globe className="h-4 w-4" />
-                {currentLang.toUpperCase()}
-              </Button>
-              
-              {langOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-popover border rounded-md shadow-lg max-h-96 overflow-y-auto">
-                  {SUPPORTED_LANGUAGES.map((lang) => (
-                    <Link
-                      key={lang.code}
-                      href={pathname.replace(`/${currentLang}`, `/${lang.code}`)}
-                      className="block px-4 py-2 text-sm hover:bg-accent"
-                      onClick={() => setLangOpen(false)}
-                    >
-                      {lang.nativeName}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
           </div>
 
           <div className="md:hidden flex items-center">

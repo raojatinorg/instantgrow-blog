@@ -15,7 +15,7 @@ export default function BlogCard({ post, lang }: BlogCardProps) {
   const router = useRouter();
   
   const handleClick = () => {
-    const url = `/${lang}/blog/${post.slug}`;
+    const url = `/blog/${post.slug}`;
     console.log('🔗 Clicking blog card');
     console.log('📝 Post:', post.title.en);
     console.log('🔗 Slug:', post.slug);
