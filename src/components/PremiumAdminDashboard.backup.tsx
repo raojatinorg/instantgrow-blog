@@ -346,7 +346,7 @@ export default function PremiumAdminDashboard() {
 
   if (isEditing && currentPost) {
     return (
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         <Card>
           <CardHeader className="bg-gradient-to-r from-primary to-secondary text-primary-foreground">
             <CardTitle className="flex justify-between items-center">
@@ -354,10 +354,10 @@ export default function PremiumAdminDashboard() {
                 <Sparkles className="h-5 w-5" />
                 {currentPost.id ? 'Edit' : 'Create New'} Blog Post
               </span>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex gap-2">
                 <Button size="sm" variant="outline" className="bg-white text-primary" onClick={() => setPreviewPost(currentPost)}>
-                  <Eye className="h-4 w-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Preview</span>
+                  <Eye className="h-4 w-4 mr-2" />
+                  Preview
                 </Button>
                 <Button size="sm" variant="outline" className="bg-white text-primary" onClick={() => setIsEditing(false)}>
                   <X className="h-4 w-4" />
@@ -367,7 +367,7 @@ export default function PremiumAdminDashboard() {
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
             {/* Basic Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold mb-2">📝 Blog Title *</label>
                 <Input
@@ -585,7 +585,7 @@ export default function PremiumAdminDashboard() {
             </Card>
 
             {/* Category & Tags */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold mb-2">📁 Category</label>
                 <select
@@ -632,7 +632,7 @@ export default function PremiumAdminDashboard() {
             </div>
 
             {/* Publishing Options */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+            <div className="flex items-center gap-6">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -661,12 +661,12 @@ export default function PremiumAdminDashboard() {
                   {uploadProgress}
                 </div>
               )}
-              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                <Button onClick={handleSave} disabled={loading} className="bg-primary hover:bg-primary/90 w-full sm:w-auto" size="lg">
+              <div className="flex gap-4">
+                <Button onClick={handleSave} disabled={loading} className="bg-primary hover:bg-primary/90" size="lg">
                   <Save className="h-4 w-4 mr-2" />
                   {loading ? 'Saving...' : 'Save Post'}
                 </Button>
-                <Button variant="outline" onClick={() => setIsEditing(false)} className="w-full sm:w-auto" size="lg">
+                <Button variant="outline" onClick={() => setIsEditing(false)} size="lg">
                   Cancel
                 </Button>
               </div>
@@ -695,9 +695,9 @@ export default function PremiumAdminDashboard() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
+    <div className="max-w-7xl mx-auto px-4 py-8">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="posts">Blog Posts</TabsTrigger>
           <TabsTrigger value="contacts" className="relative">
             Messages
@@ -737,9 +737,9 @@ export default function PremiumAdminDashboard() {
             </Card>
           </div>
 
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold">All Blog Posts</h2>
-            <Button onClick={handleCreateNew} className="bg-primary hover:bg-primary/90 w-full sm:w-auto" size="lg">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold">All Blog Posts</h2>
+            <Button onClick={handleCreateNew} className="bg-primary hover:bg-primary/90" size="lg">
               <Plus className="h-5 w-5 mr-2" />
               Create New Post
             </Button>
@@ -756,10 +756,10 @@ export default function PremiumAdminDashboard() {
             ) : (
               posts.map((post) => (
                 <Card key={post.id} className="hover:shadow-lg transition-shadow">
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex flex-col sm:flex-row gap-4">
+                  <CardContent className="p-6">
+                    <div className="flex gap-4">
                       {post.coverImage && (
-                        <img src={post.coverImage} alt="" className="w-full sm:w-32 h-48 sm:h-32 object-cover rounded" />
+                        <img src={post.coverImage} alt="" className="w-32 h-32 object-cover rounded" />
                       )}
                       <div className="flex-1">
                         <h3 className="text-xl font-bold mb-2">{post.title.en}</h3>
@@ -771,14 +771,14 @@ export default function PremiumAdminDashboard() {
                           <span>⏱️ {post.readTime} min read</span>
                         </div>
                       </div>
-                      <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto">
-                        <Button size="sm" variant="outline" onClick={() => handleEdit(post)} className="flex-1 sm:flex-none">
-                          <Edit className="h-4 w-4 sm:mr-1" />
-                          <span className="hidden sm:inline">Edit</span>
+                      <div className="flex flex-col gap-2">
+                        <Button size="sm" variant="outline" onClick={() => handleEdit(post)}>
+                          <Edit className="h-4 w-4 mr-1" />
+                          Edit
                         </Button>
-                        <Button size="sm" variant="destructive" onClick={() => handleDelete(post.id)} className="flex-1 sm:flex-none">
-                          <Trash2 className="h-4 w-4 sm:mr-1" />
-                          <span className="hidden sm:inline">Delete</span>
+                        <Button size="sm" variant="destructive" onClick={() => handleDelete(post.id)}>
+                          <Trash2 className="h-4 w-4 mr-1" />
+                          Delete
                         </Button>
                       </div>
                     </div>
@@ -802,8 +802,8 @@ export default function PremiumAdminDashboard() {
             ) : (
               contacts.map((contact) => (
                 <Card key={contact.id} className={contact.status === 'new' ? 'border-primary border-2' : ''}>
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-0 mb-4">
+                  <CardContent className="p-6">
+                    <div className="flex justify-between items-start mb-4">
                       <div className="flex items-center gap-3">
                         <Mail className={`h-6 w-6 ${contact.status === 'new' ? 'text-primary' : 'text-muted-foreground'}`} />
                         <div>
@@ -829,13 +829,13 @@ export default function PremiumAdminDashboard() {
                       <p className="text-sm whitespace-pre-wrap">{contact.message}</p>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-2">
+                    <div className="flex gap-2">
                       {contact.status === 'new' && (
-                        <Button size="sm" variant="outline" onClick={() => handleMarkAsRead(contact.id)} className="w-full sm:w-auto">
+                        <Button size="sm" variant="outline" onClick={() => handleMarkAsRead(contact.id)}>
                           Mark as Read
                         </Button>
                       )}
-                      <Button size="sm" variant="destructive" onClick={() => handleDeleteContact(contact.id)} className="w-full sm:w-auto">
+                      <Button size="sm" variant="destructive" onClick={() => handleDeleteContact(contact.id)}>
                         <Trash2 className="h-4 w-4 mr-2" />
                         Delete
                       </Button>

@@ -51,7 +51,7 @@ export default function AdminPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-muted">
+      <div className="min-h-screen flex items-center justify-center bg-muted px-4">
         <Card className="w-full max-w-md shadow-lg border">
           <CardHeader className="bg-primary text-primary-foreground rounded-t-lg">
             <CardTitle className="text-2xl text-center">Admin Login</CardTitle>
@@ -105,17 +105,18 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-muted">
       <div className="bg-primary text-primary-foreground border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-playfair font-bold">Admin Dashboard</h1>
-          <div className="flex gap-2">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-3 sm:py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
+          <h1 className="text-xl sm:text-2xl font-playfair font-bold">Admin Dashboard</h1>
+          <div className="flex gap-2 w-full sm:w-auto">
             <Button 
               onClick={() => setShowPromptGenerator(!showPromptGenerator)} 
               variant="outline" 
-              className="bg-white text-primary hover:bg-white/90 border-white"
+              className="bg-white text-primary hover:bg-white/90 border-white flex-1 sm:flex-none text-xs sm:text-sm"
+              size="sm"
             >
-              {showPromptGenerator ? 'Dashboard' : 'Blog Prompt'}
+              {showPromptGenerator ? 'Dashboard' : 'Prompt'}
             </Button>
-            <Button onClick={handleLogout} variant="outline" className="bg-white text-primary hover:bg-white/90 border-white">
+            <Button onClick={handleLogout} variant="outline" className="bg-white text-primary hover:bg-white/90 border-white flex-1 sm:flex-none text-xs sm:text-sm" size="sm">
               Logout
             </Button>
           </div>
