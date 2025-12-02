@@ -17,6 +17,7 @@ import SocialProof from '@/components/SocialProof';
 import PopularPosts from '@/components/PopularPosts';
 import PrintButton from '@/components/PrintButton';
 import FontSizeAdjuster from '@/components/FontSizeAdjuster';
+import AdSense from '@/components/AdSense';
 
 export const revalidate = 60;
 
@@ -167,6 +168,8 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <aside className="hidden lg:block lg:col-span-3 space-y-6">
             <TableOfContents />
+            {/* Sidebar Ad */}
+            <AdSense adSlot="7119791747" adFormat="auto" />
             <PopularPosts lang="en" />
           </aside>
 
@@ -236,6 +239,9 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
           </p>
         )}
 
+        {/* Ad after excerpt */}
+        <AdSense adSlot="8624445108" />
+
         <div 
           className="prose prose-lg max-w-none
             prose-headings:font-playfair prose-headings:font-bold prose-headings:text-foreground
@@ -251,6 +257,9 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
             prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-6 prose-blockquote:italic"
           dangerouslySetInnerHTML={{ __html: content }}
         />
+
+        {/* Ad after content */}
+        <AdSense adSlot="5998281765" />
 
         <div className="mt-12 pt-8 border-t">
           <div className="flex flex-wrap gap-4 mb-6">
@@ -306,6 +315,9 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         </div>
 
         <RelatedBlogs currentPostId={post.id} category={post.category} lang="en" />
+
+        {/* Ad before comments */}
+        <AdSense adSlot="4780568861" />
 
         <CommentsSection postId={post.id} />
       </article>

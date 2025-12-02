@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     creator: '@instantgrow',
   },
   verification: {
-    google: 'your-google-verification-code', // Add your Google Search Console verification code
+    google: 'dcQw7IT-MA6ljjnKoqlNRKrB5-z4OIe2J9QYg7NsWW0',
   },
 };
 
@@ -69,21 +69,21 @@ export default function RootLayout({
         {/* Google Analytics */}
         <Script
           strategy="afterInteractive"
-          src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
+          src="https://www.googletagmanager.com/gtag/js?id=G-LCFP6Z0VZR"
         />
         <Script id="google-analytics" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-XXXXXXXXXX');
+            gtag('config', 'G-LCFP6Z0VZR');
           `}
         </Script>
         
         {/* Google AdSense */}
         <Script
           async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1383695258458495"
           crossOrigin="anonymous"
           strategy="afterInteractive"
         />
