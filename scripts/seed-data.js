@@ -39,9 +39,9 @@ const samplePosts = [
     category: "Business Growth",
     tags: ["business", "websites", "growth", "digital marketing"],
     author: {
-      name: "Admin",
-      avatar: "https://ui-avatars.com/api/?name=Admin&size=150",
-      bio: "Digital marketing and web development expert"
+      name: "Rao Jatin",
+      avatar: "https://i.ibb.co/4wmNZcYP/RAO-JATIN.jpg",
+      bio: "Professional Web Developer & Digital Marketing Expert"
     },
     seo: {
       metaTitle: {
@@ -84,9 +84,9 @@ const samplePosts = [
     category: "SEO",
     tags: ["seo", "search engine", "optimization", "ranking", "traffic"],
     author: {
-      name: "Admin",
-      avatar: "https://ui-avatars.com/api/?name=Admin&size=150",
-      bio: "SEO specialist with 10+ years of experience"
+      name: "Rao Jatin",
+      avatar: "https://i.ibb.co/4wmNZcYP/RAO-JATIN.jpg",
+      bio: "Professional Web Developer & Digital Marketing Expert"
     },
     seo: {
       metaTitle: {
@@ -129,9 +129,9 @@ const samplePosts = [
     category: "Brand Building",
     tags: ["branding", "brand identity", "marketing", "business"],
     author: {
-      name: "Admin",
-      avatar: "https://ui-avatars.com/api/?name=Admin&size=150",
-      bio: "Brand strategist and digital marketing consultant"
+      name: "Rao Jatin",
+      avatar: "https://i.ibb.co/4wmNZcYP/RAO-JATIN.jpg",
+      bio: "Professional Web Developer & Digital Marketing Expert"
     },
     seo: {
       metaTitle: {

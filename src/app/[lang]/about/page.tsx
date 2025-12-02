@@ -76,9 +76,11 @@ export default function AboutPage() {
         <CardContent className="pt-6">
           <div className="flex flex-col md:flex-row gap-8 items-start">
             <div className="flex-shrink-0">
-              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-4xl font-bold text-white">
-                RJ
-              </div>
+              <img 
+                src="https://i.ibb.co/4wmNZcYP/RAO-JATIN.jpg" 
+                alt="Rao Jatin" 
+                className="w-32 h-32 rounded-full object-cover border-4 border-primary shadow-lg"
+              />
             </div>
             <div className="flex-1">
               <h3 className="text-2xl font-bold mb-2">Rao Jatin</h3>
