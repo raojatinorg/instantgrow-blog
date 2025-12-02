@@ -42,12 +42,12 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     
     if (!snapshot.empty) {
       const post = snapshot.docs[0].data() as BlogPost;
-      const title = post.title.en;
-      const excerpt = post.excerpt.en;
+      const title = typeof post.title === 'string' ? post.title : post.title?.en || '';
+      const excerpt = typeof post.excerpt === 'string' ? post.excerpt : post.excerpt?.en || '';
       
       return {
-        title: post.seo?.metaTitle?.en || title,
-        description: post.seo?.metaDescription?.en || excerpt,
+        title: (typeof post.seo?.metaTitle === 'string' ? post.seo.metaTitle : post.seo?.metaTitle?.en) || title,
+        description: (typeof post.seo?.metaDescription === 'string' ? post.seo.metaDescription : post.seo?.metaDescription?.en) || excerpt,
         keywords: post.seo?.keywords?.join(', '),
         openGraph: {
           title: title,
@@ -111,9 +111,9 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
     );
   }
 
-  const title = post.title.en;
-  const excerpt = post.excerpt.en;
-  const content = post.content.en;
+  const title = typeof post.title === 'string' ? post.title : post.title?.en || '';
+  const excerpt = typeof post.excerpt === 'string' ? post.excerpt : post.excerpt?.en || '';
+  const content = typeof post.content === 'string' ? post.content : post.content?.en || '';
 
   const jsonLd = {
     '@context': 'https://schema.org',

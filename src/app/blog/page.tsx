@@ -59,8 +59,8 @@ export default function BlogPage() {
 
     if (filters.query) {
       filtered = filtered.filter(post => 
-        post.title.en?.toLowerCase().includes(filters.query.toLowerCase()) ||
-        post.excerpt.en?.toLowerCase().includes(filters.query.toLowerCase()) ||
+        post.title?.toLowerCase().includes(filters.query.toLowerCase()) ||
+        post.excerpt?.toLowerCase().includes(filters.query.toLowerCase()) ||
         post.tags.some(tag => tag.toLowerCase().includes(filters.query.toLowerCase()))
       );
     }
@@ -100,7 +100,7 @@ export default function BlogPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {filteredPosts.map((post) => (
-            <BlogCard key={post.id} post={post} lang="en" />
+            <BlogCard key={post.id} post={post} />
           ))}
         </div>
       )}

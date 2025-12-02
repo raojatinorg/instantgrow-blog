@@ -55,7 +55,6 @@ export default function HomePage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <ReadingHistory lang="en" />
       
       <section className="text-center mb-20 gradient-bg py-20 rounded-2xl relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-transparent" />
@@ -82,7 +81,7 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {featured.map((post) => (
-              <BlogCard key={post.id} post={post} lang="en" />
+              <BlogCard key={post.id} post={post} />
             ))}
           </div>
         </section>
@@ -109,7 +108,7 @@ export default function HomePage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {latest.map((post) => (
-              <BlogCard key={post.id} post={post} lang="en" />
+              <BlogCard key={post.id} post={post} />
             ))}
           </div>
         )}

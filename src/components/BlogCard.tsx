@@ -8,18 +8,13 @@ import { useRouter } from 'next/navigation';
 
 interface BlogCardProps {
   post: BlogPost;
-  lang: string;
 }
 
-export default function BlogCard({ post, lang }: BlogCardProps) {
+export default function BlogCard({ post }: BlogCardProps) {
   const router = useRouter();
   
   const handleClick = () => {
     const url = `/blog/${post.slug}`;
-    console.log('🔗 Clicking blog card');
-    console.log('📝 Post:', post.title.en);
-    console.log('🔗 Slug:', post.slug);
-    console.log('🌐 URL:', url);
     router.push(url);
   };
   
@@ -32,7 +27,7 @@ export default function BlogCard({ post, lang }: BlogCardProps) {
           {post.coverImage ? (
             <Image
               src={post.coverImage}
-              alt={post.title[lang] || post.title.en}
+              alt={post.title}
               fill
               className="object-cover group-hover:scale-110 transition-transform duration-300"
               unoptimized
@@ -64,10 +59,10 @@ export default function BlogCard({ post, lang }: BlogCardProps) {
         </div>
         <CardContent className="p-6">
           <h3 className="text-xl font-playfair font-semibold mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-            {post.title[lang] || post.title.en}
+            {post.title}
           </h3>
           <p className="text-muted-foreground text-sm line-clamp-3 leading-relaxed">
-            {post.excerpt[lang] || post.excerpt.en}
+            {post.excerpt}
           </p>
           <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
             {post.views && post.views > 0 && (

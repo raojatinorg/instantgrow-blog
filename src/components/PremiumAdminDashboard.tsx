@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, query, orderBy } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '@/lib/firebase';
-import { BlogPost, ContactSubmission, SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from '@/types';
+import { BlogPost, ContactSubmission } from '@/types';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -100,9 +100,9 @@ export default function PremiumAdminDashboard() {
   const handleCreateNew = () => {
     setCurrentPost({
       slug: '',
-      title: { en: '' },
-      excerpt: { en: '' },
-      content: { en: '' },
+      title: '',
+      excerpt: '',
+      content: '',
       coverImage: '',
       category: '',
       tags: [],
@@ -112,8 +112,8 @@ export default function PremiumAdminDashboard() {
         bio: 'Professional Web Developer & Digital Marketing Expert',
       },
       seo: {
-        metaTitle: { en: '' },
-        metaDescription: { en: '' },
+        metaTitle: '',
+        metaDescription: '',
         ogImage: '',
         keywords: [],
       },
@@ -151,7 +151,7 @@ export default function PremiumAdminDashboard() {
   };
 
   const autoGenerateSEO = async () => {
-    if (!currentPost?.title?.en) {
+    if (!currentPost?.title) {
       alert('Please enter a title first!');
       return;
     }
@@ -161,9 +161,9 @@ export default function PremiumAdminDashboard() {
       const { generateViralSEO } = await import('@/lib/gemini-seo');
       
       const result = await generateViralSEO(
-        currentPost.title.en,
-        currentPost.content?.en || '',
-        currentPost.excerpt?.en || ''
+        currentPost.title,
+        currentPost.content || '',
+        currentPost.excerpt || ''
       );
 
       setSeoSuggestions(result);
@@ -172,8 +172,8 @@ export default function PremiumAdminDashboard() {
         ...currentPost,
         seo: {
           ...currentPost.seo,
-          metaTitle: { en: result.metaTitle },
-          metaDescription: { en: result.metaDescription },
+          metaTitle: result.metaTitle,
+          metaDescription: result.metaDescription,
           keywords: result.keywords,
           ogImage: currentPost.coverImage || '',
         },
@@ -184,9 +184,9 @@ export default function PremiumAdminDashboard() {
       console.error('AI SEO generation error:', error);
       
       // Fallback to basic SEO
-      const title = currentPost.title.en;
-      const content = currentPost.content?.en || '';
-      const excerpt = currentPost.excerpt?.en || '';
+      const title = currentPost.title;
+      const content = currentPost.content || '';
+      const excerpt = currentPost.excerpt || '';
 
       const metaTitle = title.length > 60 ? title.substring(0, 57) + '...' : title;
       const metaDescription = excerpt || (content.replace(/<[^>]*>/g, '').substring(0, 157) + '...');
@@ -199,8 +199,8 @@ export default function PremiumAdminDashboard() {
         ...currentPost,
         seo: {
           ...currentPost.seo,
-          metaTitle: { en: metaTitle },
-          metaDescription: { en: metaDescription },
+          metaTitle: metaTitle,
+          metaDescription: metaDescription,
           keywords: [...new Set(words)],
           ogImage: currentPost.coverImage || '',
         },
@@ -213,7 +213,7 @@ export default function PremiumAdminDashboard() {
   };
 
   const handleSave = async () => {
-    if (!currentPost?.title?.en) {
+    if (!currentPost?.title) {
       alert('Please enter a title!');
       return;
     }
@@ -232,11 +232,11 @@ export default function PremiumAdminDashboard() {
       }
 
       // Generate slug - ALWAYS from title to ensure consistency
-      const slug = generateSlug(currentPost.title.en);
-      const readTime = calculateReadTime(currentPost.content?.en || '');
+      const slug = generateSlug(currentPost.title);
+      const readTime = calculateReadTime(currentPost.content || '');
 
       console.log('💾 Saving post with slug:', slug);
-      console.log('📝 Title:', currentPost.title.en);
+      console.log('📝 Title:', currentPost.title);
       console.log('✅ Published:', currentPost.published);
       
       if (!slug || slug.trim() === '') {
@@ -246,13 +246,13 @@ export default function PremiumAdminDashboard() {
       }
       
       // Validate required fields
-      if (!currentPost.title?.en || currentPost.title.en.trim() === '') {
+      if (!currentPost.title || currentPost.title.trim() === '') {
         alert('❌ Title is required!');
         setLoading(false);
         return;
       }
       
-      if (!currentPost.content?.en || currentPost.content.en.trim() === '') {
+      if (!currentPost.content || currentPost.content.trim() === '') {
         alert('❌ Content is required!');
         setLoading(false);
         return;
@@ -261,9 +261,9 @@ export default function PremiumAdminDashboard() {
       // Ensure all required fields are present
       const postData = {
         slug,
-        title: currentPost.title || { en: '' },
-        excerpt: currentPost.excerpt || { en: '' },
-        content: currentPost.content || { en: '' },
+        title: currentPost.title || '',
+        excerpt: currentPost.excerpt || '',
+        content: currentPost.content || '',
         coverImage: coverImageUrl,
         category: currentPost.category || 'Uncategorized',
         tags: currentPost.tags || [],
@@ -273,8 +273,8 @@ export default function PremiumAdminDashboard() {
           bio: 'Professional Web Developer',
         },
         seo: {
-          metaTitle: currentPost.seo?.metaTitle || { en: currentPost.title.en },
-          metaDescription: currentPost.seo?.metaDescription || { en: currentPost.excerpt?.en || '' },
+          metaTitle: currentPost.seo?.metaTitle || currentPost.title,
+          metaDescription: currentPost.seo?.metaDescription || currentPost.excerpt || '',
           ogImage: coverImageUrl,
           keywords: currentPost.seo?.keywords || [],
         },
@@ -300,19 +300,23 @@ export default function PremiumAdminDashboard() {
         });
         
         console.log('✅ New post created in Firestore:', docRef.id);
-        console.log('🔗 Post URL:', `/en/blog/${slug}`);
+        console.log('🔗 Post URL:', `/blog/${slug}`);
         
         if (postData.published) {
           const message = `✅ Blog Post Published Successfully!\n\n` +
-            `Title: ${postData.title.en}\n` +
+            `Title: ${postData.title}\n` +
             `Slug: ${slug}\n` +
-            `URL: /en/blog/${slug}\n\n` +
+            `URL: /blog/${slug}\n\n` +
             `✅ Post is now live on your website!`;
           alert(message);
-          
-          // Redirect to success page
-          window.location.href = `/en/admin/success?slug=${slug}&title=${encodeURIComponent(postData.title.en)}`;
-        } else {
+        }
+        
+        setIsEditing(false);
+        setCurrentPost(null);
+        setImageFile(null);
+        await fetchPosts();
+        
+        if (false) {
           alert('✅ Post saved as draft!\n\nSlug: ' + slug + '\n\nPublish it later from the posts list.');
           setIsEditing(false);
           setCurrentPost(null);
@@ -371,10 +375,10 @@ export default function PremiumAdminDashboard() {
               <div>
                 <label className="block text-sm font-semibold mb-2">📝 Blog Title *</label>
                 <Input
-                  value={currentPost.title?.en || ''}
+                  value={currentPost.title || ''}
                   onChange={(e) => setCurrentPost({
                     ...currentPost,
-                    title: { ...currentPost.title, en: e.target.value }
+                    title: e.target.value
                   })}
                   placeholder="Enter compelling blog title..."
                   className="text-lg"
@@ -395,17 +399,17 @@ export default function PremiumAdminDashboard() {
             <div>
               <label className="block text-sm font-semibold mb-2">📄 Excerpt (Short Description)</label>
               <textarea
-                value={currentPost.excerpt?.en || ''}
+                value={currentPost.excerpt || ''}
                 onChange={(e) => setCurrentPost({
                   ...currentPost,
-                  excerpt: { ...currentPost.excerpt, en: e.target.value }
+                  excerpt: e.target.value
                 })}
                 className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 rows={3}
                 placeholder="Write a compelling 150-160 character summary..."
               />
               <p className="text-xs text-muted-foreground mt-1">
-                {(currentPost.excerpt?.en || '').length}/160 characters
+                {(currentPost.excerpt || '').length}/160 characters
               </p>
             </div>
 
@@ -435,10 +439,10 @@ export default function PremiumAdminDashboard() {
 
               {editorMode === 'visual' ? (
                 <ReactQuill
-                  value={currentPost.content?.en || ''}
+                  value={currentPost.content || ''}
                   onChange={(value) => setCurrentPost({
                     ...currentPost,
-                    content: { ...currentPost.content, en: value }
+                    content: value
                   })}
                   modules={quillModules}
                   className="bg-white"
@@ -446,10 +450,10 @@ export default function PremiumAdminDashboard() {
                 />
               ) : (
                 <textarea
-                  value={currentPost.content?.en || ''}
+                  value={currentPost.content || ''}
                   onChange={(e) => setCurrentPost({
                     ...currentPost,
-                    content: { ...currentPost.content, en: e.target.value }
+                    content: e.target.value
                   })}
                   className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono"
                   rows={20}
@@ -486,7 +490,7 @@ export default function PremiumAdminDashboard() {
                               key={i}
                               onClick={() => setCurrentPost({
                                 ...currentPost,
-                                title: { ...currentPost.title, en: title }
+                                title: title
                               })}
                               className="w-full text-left text-sm bg-white p-3 rounded hover:bg-primary/10 transition-colors border border-primary/20"
                             >
@@ -530,31 +534,31 @@ export default function PremiumAdminDashboard() {
                 <div>
                   <label className="block text-sm font-semibold mb-2">Meta Title (60 chars max)</label>
                   <Input
-                    value={currentPost.seo?.metaTitle?.en || ''}
+                    value={currentPost.seo?.metaTitle || ''}
                     onChange={(e) => setCurrentPost({
                       ...currentPost,
                       seo: {
                         ...currentPost.seo,
-                        metaTitle: { en: e.target.value }
+                        metaTitle: e.target.value
                       }
                     })}
                     placeholder="SEO-optimized title for search engines"
                     maxLength={60}
                   />
                   <p className="text-xs text-muted-foreground mt-1">
-                    {(currentPost.seo?.metaTitle?.en || '').length}/60 characters
+                    {(currentPost.seo?.metaTitle || '').length}/60 characters
                   </p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-semibold mb-2">Meta Description (160 chars max)</label>
                   <textarea
-                    value={currentPost.seo?.metaDescription?.en || ''}
+                    value={currentPost.seo?.metaDescription || ''}
                     onChange={(e) => setCurrentPost({
                       ...currentPost,
                       seo: {
                         ...currentPost.seo,
-                        metaDescription: { en: e.target.value }
+                        metaDescription: e.target.value
                       }
                     })}
                     className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -563,7 +567,7 @@ export default function PremiumAdminDashboard() {
                     maxLength={160}
                   />
                   <p className="text-xs text-muted-foreground mt-1">
-                    {(currentPost.seo?.metaDescription?.en || '').length}/160 characters
+                    {(currentPost.seo?.metaDescription || '').length}/160 characters
                   </p>
                 </div>
 
@@ -681,12 +685,12 @@ export default function PremiumAdminDashboard() {
               <DialogTitle>Preview</DialogTitle>
             </DialogHeader>
             <article className="prose prose-lg max-w-none">
-              <h1>{previewPost?.title?.en}</h1>
+              <h1>{previewPost?.title}</h1>
               {previewPost?.coverImage && (
                 <img src={previewPost.coverImage} alt="Cover" className="w-full rounded-lg" />
               )}
-              <p className="lead">{previewPost?.excerpt?.en}</p>
-              <div dangerouslySetInnerHTML={{ __html: previewPost?.content?.en || '' }} />
+              <p className="lead">{previewPost?.excerpt}</p>
+              <div dangerouslySetInnerHTML={{ __html: previewPost?.content || '' }} />
             </article>
           </DialogContent>
         </Dialog>
@@ -762,8 +766,8 @@ export default function PremiumAdminDashboard() {
                         <img src={post.coverImage} alt="" className="w-full sm:w-32 h-48 sm:h-32 object-cover rounded" />
                       )}
                       <div className="flex-1">
-                        <h3 className="text-xl font-bold mb-2">{post.title.en}</h3>
-                        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{post.excerpt.en}</p>
+                        <h3 className="text-xl font-bold mb-2">{post.title}</h3>
+                        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{post.excerpt}</p>
                         <div className="flex gap-4 text-xs text-muted-foreground">
                           <span className="bg-primary/10 text-primary px-2 py-1 rounded">{post.category}</span>
                           <span>{post.published ? '✅ Published' : '📝 Draft'}</span>
