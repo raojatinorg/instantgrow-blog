@@ -65,8 +65,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1383695258458495"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body className={`${inter.variable} ${playfair.variable}`}>
-        {/* Google Analytics */}
         <Script
           strategy="afterInteractive"
           src="https://www.googletagmanager.com/gtag/js?id=G-LCFP6Z0VZR"
@@ -79,13 +85,6 @@ export default function RootLayout({
             gtag('config', 'G-LCFP6Z0VZR');
           `}
         </Script>
-        
-        {/* Google AdSense */}
-        <Script
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1383695258458495"
-          strategy="lazyOnload"
-          crossOrigin="anonymous"
-        />
         
         <Navbar />
         {children}

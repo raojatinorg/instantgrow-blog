@@ -13,6 +13,9 @@ interface BlogCardProps {
 export default function BlogCard({ post }: BlogCardProps) {
   const router = useRouter();
   
+  const title = typeof post.title === 'string' ? post.title : post.title?.en || '';
+  const excerpt = typeof post.excerpt === 'string' ? post.excerpt : post.excerpt?.en || '';
+  
   const handleClick = () => {
     const url = `/blog/${post.slug}`;
     router.push(url);
@@ -27,7 +30,7 @@ export default function BlogCard({ post }: BlogCardProps) {
           {post.coverImage ? (
             <Image
               src={post.coverImage}
-              alt={post.title}
+              alt={title}
               fill
               className="object-cover group-hover:scale-110 transition-transform duration-300"
               unoptimized
@@ -59,10 +62,10 @@ export default function BlogCard({ post }: BlogCardProps) {
         </div>
         <CardContent className="p-6">
           <h3 className="text-xl font-playfair font-semibold mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-            {post.title}
+            {title}
           </h3>
           <p className="text-muted-foreground text-sm line-clamp-3 leading-relaxed">
-            {post.excerpt}
+            {excerpt}
           </p>
           <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
             {post.views && post.views > 0 && (
