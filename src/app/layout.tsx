@@ -65,7 +65,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
+      <body className={`${inter.variable} ${playfair.variable}`}>
         {/* Google Analytics */}
         <Script
           strategy="afterInteractive"
@@ -74,7 +74,7 @@ export default function RootLayout({
         <Script id="google-analytics" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
+            function gtag(){dataLayer.push(arguments);};
             gtag('js', new Date());
             gtag('config', 'G-LCFP6Z0VZR');
           `}
@@ -82,13 +82,11 @@ export default function RootLayout({
         
         {/* Google AdSense */}
         <Script
-          async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1383695258458495"
+          strategy="lazyOnload"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
         />
-      </head>
-      <body className={`${inter.variable} ${playfair.variable}`}>
+        
         <Navbar />
         {children}
         <Footer />
